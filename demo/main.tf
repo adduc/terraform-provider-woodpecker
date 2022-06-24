@@ -18,5 +18,5 @@ data "woodpecker_repo" "repo" {
 }
 
 output "repo_id" {
-  value = data.woodpecker_repo.repo.id
+  value = data.woodpecker_repo.repo
 }
