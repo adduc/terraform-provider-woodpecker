@@ -2,8 +2,6 @@ package internal
 
 import (
 	"context"
-	"crypto/tls"
-	"net/http"
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -45,6 +43,7 @@ func (p *provider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics)
 func (p *provider) GetDataSources(_ context.Context) (map[string]tfsdk.DataSourceType, diag.Diagnostics) {
 	return map[string]tfsdk.DataSourceType{
 		"woodpecker_repo": dataSourceRepoType{},
+		"woodpecker_self": dataSourceSelfType{},
 	}, nil
 }
 
@@ -83,21 +82,15 @@ func (p *provider) createProviderConfiguration(
 	}
 
 	if config.Server.Null {
-		config.Server = types.String{
-			Value: os.Getenv("WOODPECKER_SERVER"),
-		}
+		config.Server = types.String{Value: os.Getenv("WOODPECKER_SERVER")}
 	}
 
 	if config.Token.Null {
-		config.Token = types.String{
-			Value: os.Getenv("WOODPECKER_TOKEN"),
-		}
+		config.Token = types.String{Value: os.Getenv("WOODPECKER_TOKEN")}
 	}
 
 	if config.Verify.Null {
-		config.Verify = types.Bool{
-			Value: os.Getenv("WOODPECKER_VERIFY") == "1",
-		}
+		config.Verify = types.Bool{Value: os.Getenv("WOODPECKER_VERIFY") != "0"}
 	}
 
 	return config
@@ -111,19 +104,9 @@ func (p *provider) createClient(
 
 	oauth_config := new(oauth2.Config)
 
-	tlsConfig := &tls.Config{
-		InsecureSkipVerify: config.Verify.Value,
-	}
-
 	authenticator := oauth_config.Client(ctx, &oauth2.Token{
 		AccessToken: config.Token.Value,
 	})
-
-	trans, _ := authenticator.Transport.(*oauth2.Transport)
-	trans.Base = &http.Transport{
-		TLSClientConfig: tlsConfig,
-		Proxy:           http.ProxyFromEnvironment,
-	}
 
 	client := woodpecker.NewClient(config.Server.Value, authenticator)
 
