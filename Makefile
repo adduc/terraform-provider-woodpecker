@@ -15,4 +15,4 @@ install: build
 	cp bin/$(BINARY) ~/.terraform.d/plugins/$(DIR)
 
 test: install
-	cd demo && rm -r .terraform.lock.hcl .terraform && terraform init && terraform plan
+	cd demo && rm -rf .terraform.lock.hcl .terraform && terraform init && terraform plan

@@ -2,7 +2,11 @@ module github.com/adduc/terraform-provider-woodpecker
 
 go 1.18
 
-require github.com/hashicorp/terraform-plugin-framework v0.9.0
+require (
+	github.com/hashicorp/terraform-plugin-framework v0.9.0
+	github.com/woodpecker-ci/woodpecker v0.15.3
+	golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b
+)
 
 require (
 	github.com/fatih/color v1.13.0 // indirect
@@ -22,11 +26,11 @@ require (
 	github.com/oklog/run v1.0.0 // indirect
 	github.com/vmihailenco/msgpack/v4 v4.3.12 // indirect
 	github.com/vmihailenco/tagparser v0.1.1 // indirect
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
-	golang.org/x/text v0.3.3 // indirect
-	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
-	google.golang.org/grpc v1.46.0 // indirect
+	golang.org/x/net v0.0.0-20220615171555-694bf12d69de // indirect
+	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
+	golang.org/x/text v0.3.7 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20220616135557-88e70c0c3a90 // indirect
+	google.golang.org/grpc v1.47.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 )
