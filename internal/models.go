@@ -20,3 +20,12 @@ type Repo struct {
 	AllowPull  types.Bool   `tfsdk:"allow_pull"`
 	Config     types.String `tfsdk:"config"`
 }
+
+type User struct {
+	ID     types.Int64  `tfsdk:"id"`
+	Login  types.String `tfsdk:"login"`
+	Email  types.String `tfsdk:"email"`
+	Avatar types.String `tfsdk:"avatar"`
+	Active types.Bool   `tfsdk:"active"`
+	Admin  types.Bool   `tfsdk:"admin"`
+}

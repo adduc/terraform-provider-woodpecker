@@ -12,11 +12,17 @@ provider "woodpecker" {
   token  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZXh0IjoiamxvbmciLCJ0eXBlIjoidXNlciJ9.In1kQ3Idy57r-JPRjMSwslkVTFtMuflfe4zhIRX39Ws"
 }
 
-data "woodpecker_repo" "repo" {
-  owner = "jlong"
-  name  = "2nd-repo"
-}
+# data "woodpecker_repo" "repo" {
+#   owner = "jlong"
+#   name  = "2nd-repo"
+# }
 
-output "repo_id" {
-  value = data.woodpecker_repo.repo
+# output "repo" {
+#   value = data.woodpecker_repo.repo
+# }
+
+
+data "woodpecker_self" "self" {}
+output "self" {
+  value = data.woodpecker_self.self
 }
