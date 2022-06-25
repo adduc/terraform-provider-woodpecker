@@ -8,9 +8,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type dataSourceRepoType struct{}
+type dataSourceRepositoryType struct{}
 
-func (r dataSourceRepoType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r dataSourceRepositoryType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"id": {
@@ -102,17 +102,17 @@ func (r dataSourceRepoType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 	}, nil
 }
 
-func (r dataSourceRepoType) NewDataSource(_ context.Context, p tfsdk.Provider) (tfsdk.DataSource, diag.Diagnostics) {
-	return dataSourceRepo{
+func (r dataSourceRepositoryType) NewDataSource(_ context.Context, p tfsdk.Provider) (tfsdk.DataSource, diag.Diagnostics) {
+	return dataSourceRepository{
 		p: *(p.(*provider)),
 	}, nil
 }
 
-type dataSourceRepo struct {
+type dataSourceRepository struct {
 	p provider
 }
 
-func (r dataSourceRepo) Read(ctx context.Context, req tfsdk.ReadDataSourceRequest, resp *tfsdk.ReadDataSourceResponse) {
+func (r dataSourceRepository) Read(ctx context.Context, req tfsdk.ReadDataSourceRequest, resp *tfsdk.ReadDataSourceResponse) {
 
 	// unmarshall request config into resourceData
 	var resourceData Repo

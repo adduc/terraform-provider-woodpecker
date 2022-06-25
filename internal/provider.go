@@ -42,8 +42,8 @@ func (p *provider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics)
 
 func (p *provider) GetDataSources(_ context.Context) (map[string]tfsdk.DataSourceType, diag.Diagnostics) {
 	return map[string]tfsdk.DataSourceType{
-		"woodpecker_repo": dataSourceRepoType{},
-		"woodpecker_self": dataSourceSelfType{},
+		"woodpecker_repository": dataSourceRepositoryType{},
+		"woodpecker_self":       dataSourceSelfType{},
 	}, nil
 }
 
