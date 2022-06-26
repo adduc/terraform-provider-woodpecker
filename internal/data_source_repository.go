@@ -115,7 +115,7 @@ type dataSourceRepository struct {
 func (r dataSourceRepository) Read(ctx context.Context, req tfsdk.ReadDataSourceRequest, resp *tfsdk.ReadDataSourceResponse) {
 
 	// unmarshall request config into resourceData
-	var resourceData Repo
+	var resourceData Repository
 	diags := req.Config.Get(ctx, &resourceData)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -132,21 +132,7 @@ func (r dataSourceRepository) Read(ctx context.Context, req tfsdk.ReadDataSource
 		return
 	}
 
-	// unmarshall repo response into resourceData
-	resourceData.ID = types.Int64{Value: repo.ID}
-	resourceData.FullName = types.String{Value: repo.FullName}
-	resourceData.Avatar = types.String{Value: repo.Avatar}
-	resourceData.Link = types.String{Value: repo.Link}
-	resourceData.Kind = types.String{Value: repo.Kind}
-	resourceData.Clone = types.String{Value: repo.Clone}
-	resourceData.Branch = types.String{Value: repo.Branch}
-	resourceData.Timeout = types.Int64{Value: repo.Timeout}
-	resourceData.Visibility = types.String{Value: repo.Visibility}
-	resourceData.IsPrivate = types.Bool{Value: repo.IsPrivate}
-	resourceData.IsTrusted = types.Bool{Value: repo.IsTrusted}
-	resourceData.IsGated = types.Bool{Value: repo.IsGated}
-	resourceData.AllowPull = types.Bool{Value: repo.AllowPull}
-	resourceData.Config = types.String{Value: repo.Config}
+	WoodpeckerToRepository(*repo, &resourceData)
 
 	diags = resp.State.Set(ctx, &resourceData)
 	resp.Diagnostics.Append(diags...)

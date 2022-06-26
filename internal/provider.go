@@ -48,7 +48,9 @@ func (p *provider) GetDataSources(_ context.Context) (map[string]tfsdk.DataSourc
 }
 
 func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
-	return map[string]tfsdk.ResourceType{}, nil
+	return map[string]tfsdk.ResourceType{
+		"woodpecker_repository": resourceRepositoryType{},
+	}, nil
 }
 
 func (p *provider) Configure(ctx context.Context, req tfsdk.ConfigureProviderRequest, resp *tfsdk.ConfigureProviderResponse) {

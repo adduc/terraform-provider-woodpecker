@@ -1,8 +1,10 @@
 package internal
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type Repo struct {
+type Repository struct {
 	ID         types.Int64  `tfsdk:"id"`
 	Owner      types.String `tfsdk:"owner"`
 	Name       types.String `tfsdk:"name"`
@@ -14,7 +16,6 @@ type Repo struct {
 	Branch     types.String `tfsdk:"branch"`
 	Timeout    types.Int64  `tfsdk:"timeout"`
 	Visibility types.String `tfsdk:"visibility"`
-	IsPrivate  types.Bool   `tfsdk:"is_private"`
 	IsTrusted  types.Bool   `tfsdk:"is_trusted"`
 	IsGated    types.Bool   `tfsdk:"is_gated"`
 	AllowPull  types.Bool   `tfsdk:"allow_pull"`

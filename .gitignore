@@ -1,3 +1,5 @@
 bin/
 demo/.terraform.lock.hcl
 demo/.terraform
+demo/terraform.tfstate
+demo/terraform.tfstate.backup

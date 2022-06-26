@@ -12,17 +12,40 @@ provider "woodpecker" {
   token  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZXh0IjoiamxvbmciLCJ0eXBlIjoidXNlciJ9.In1kQ3Idy57r-JPRjMSwslkVTFtMuflfe4zhIRX39Ws"
 }
 
-# data "woodpecker_repository" "repo" {
+##
+## Data Source: Repository
+##
+
+# data "woodpecker_repository" "repository" {
 #   owner = "jlong"
-#   name  = "2nd-repo"
+#   name  = "repo-3"
 # }
 
-# output "repo" {
-#   value = data.woodpecker_repository.repo
+# output "repository" {
+#   value = data.woodpecker_repository.repository
 # }
 
 
-data "woodpecker_self" "self" {}
-output "self" {
-  value = data.woodpecker_self.self
+##
+## Data Source: Self
+##
+
+# data "woodpecker_self" "self" {}
+# output "self" {
+#   value = data.woodpecker_self.self
+# }
+
+
+##
+## Resource: Repository
+##
+
+resource "woodpecker_repository" "repository" {
+  owner = "jlong"
+  name  = "repo-3"
+  config = "b"
+}
+
+output "repository" {
+  value = woodpecker_repository.repository
 }

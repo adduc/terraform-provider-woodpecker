@@ -13,6 +13,14 @@ build:
 install: build
 	mkdir -p ~/.terraform.d/plugins/$(DIR)
 	cp bin/$(BINARY) ~/.terraform.d/plugins/$(DIR)
+	cd demo && rm -rf .terraform.lock.hcl .terraform
+	cd demo && terraform init
 
-test: install
-	cd demo && rm -rf .terraform.lock.hcl .terraform && terraform init && terraform plan
+test-reset: install
+	cd demo && rm -rf terraform.tfstate \
+
+test-plan: install
+	cd demo && terraform plan # apply -auto-approve
+
+test-apply: install
+	cd demo && terraform apply -auto-approve
