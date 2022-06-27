@@ -24,3 +24,6 @@ test-plan: install
 
 test-apply: install
 	cd demo && terraform apply -auto-approve
+
+test-import: install
+	cd demo && terraform import woodpecker_repository.repository jlong/repo-3
