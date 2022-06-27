@@ -281,6 +281,25 @@ func (r resourceRepository) Update(ctx context.Context, req tfsdk.UpdateResource
 
 func (r resourceRepository) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
 
+	var repoState Repository
+	diags := req.State.Get(ctx, &repoState)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	repoOwner := repoState.Owner.Value
+	repoName := repoState.Name.Value
+
+	err := r.p.client.RepoDel(repoOwner, repoName)
+
+	if err != nil {
+		resp.Diagnostics.AddError("Error deleting repository", err.Error())
+		return
+	}
+
+	// Remove resource from state
+	resp.State.RemoveResource(ctx)
 }
 
 func (r resourceRepository) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
