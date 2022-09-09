@@ -1,4 +1,4 @@
-bin/
+artifacts/
 demo/.terraform.lock.hcl
 demo/.terraform
 demo/terraform.tfstate
