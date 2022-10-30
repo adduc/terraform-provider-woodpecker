@@ -4,8 +4,10 @@ import (
 	"context"
 	"os"
 
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
@@ -20,6 +22,10 @@ type woodpeckerProvider struct {
 	config providerConfig
 	client woodpecker.Client
 	self   *woodpecker.User
+}
+
+func (p *woodpeckerProvider) Metadata(_ context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+	resp.TypeName = "woodpecker"
 }
 
 func (p *woodpeckerProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -41,21 +47,20 @@ func (p *woodpeckerProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Di
 	}, nil
 }
 
-func (p *woodpeckerProvider) GetDataSources(_ context.Context) (map[string]provider.DataSourceType, diag.Diagnostics) {
-	return map[string]provider.DataSourceType{
-		"woodpecker_repository": dataSourceRepositoryType{},
-		"woodpecker_self":       dataSourceSelfType{},
-	}, nil
+func (p *woodpeckerProvider) DataSources(_ context.Context) []func() datasource.DataSource {
+	return []func() datasource.DataSource{
+		NewDataSourceRepository,
+		NewDataSourceSelf,
+	}
 }
 
-func (p *woodpeckerProvider) GetResources(_ context.Context) (map[string]provider.ResourceType, diag.Diagnostics) {
-	return map[string]provider.ResourceType{
-		"woodpecker_repository": resourceRepositoryType{},
-	}, nil
+func (p *woodpeckerProvider) Resources(_ context.Context) []func() resource.Resource {
+	return []func() resource.Resource{
+		NewRepositoryResource,
+	}
 }
 
 func (p *woodpeckerProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-
 	p.config = p.createProviderConfiguration(ctx, req, resp)
 
 	if resp.Diagnostics.HasError() {
@@ -63,6 +68,9 @@ func (p *woodpeckerProvider) Configure(ctx context.Context, req provider.Configu
 	}
 
 	p.client, p.self = p.createClient(ctx, p.config, resp)
+
+	resp.DataSourceData = p
+	resp.ResourceData = p
 }
 
 type providerConfig struct {

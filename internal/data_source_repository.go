@@ -2,17 +2,27 @@ package internal
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type dataSourceRepositoryType struct{}
+func NewDataSourceRepository() datasource.DataSource {
+	return &DataSourceRepository{}
+}
 
-func (r dataSourceRepositoryType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+type DataSourceRepository struct {
+	p woodpeckerProvider
+}
+
+func (d *DataSourceRepository) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_repository"
+}
+
+func (r DataSourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"id": {
@@ -71,12 +81,6 @@ func (r dataSourceRepositoryType) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Computed:    true,
 				Description: "Public, Private, or Internal",
 			},
-			"is_private": {
-				Type:     types.BoolType,
-				Computed: true,
-				Description: "If true, only authenticated users of the " +
-					"Woodpecker instance can see this project.",
-			},
 			"is_trusted": {
 				Type:     types.BoolType,
 				Computed: true,
@@ -104,17 +108,27 @@ func (r dataSourceRepositoryType) GetSchema(_ context.Context) (tfsdk.Schema, di
 	}, nil
 }
 
-func (r dataSourceRepositoryType) NewDataSource(_ context.Context, p provider.Provider) (datasource.DataSource, diag.Diagnostics) {
-	return dataSourceRepository{
-		p: *(p.(*woodpeckerProvider)),
-	}, nil
+func (r *DataSourceRepository) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return
+	}
+
+	p, ok := req.ProviderData.(*woodpeckerProvider)
+
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *woodpeckerProvider, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return
+	}
+
+	r.p = *p
 }
 
-type dataSourceRepository struct {
-	p woodpeckerProvider
-}
-
-func (r dataSourceRepository) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (r DataSourceRepository) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 
 	// unmarshall request config into resourceData
 	var resourceData Repository

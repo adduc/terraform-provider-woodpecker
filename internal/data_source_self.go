@@ -2,17 +2,27 @@ package internal
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type dataSourceSelfType struct{}
+func NewDataSourceSelf() datasource.DataSource {
+	return &DataSourceSelf{}
+}
 
-func (r dataSourceSelfType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+type DataSourceSelf struct {
+	p woodpeckerProvider
+}
+
+func (d *DataSourceSelf) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_self"
+}
+
+func (r DataSourceSelf) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"id": {
@@ -49,17 +59,27 @@ func (r dataSourceSelfType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 	}, nil
 }
 
-func (r dataSourceSelfType) NewDataSource(_ context.Context, p provider.Provider) (datasource.DataSource, diag.Diagnostics) {
-	return dataSourceSelf{
-		p: *(p.(*woodpeckerProvider)),
-	}, nil
+func (r *DataSourceSelf) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return
+	}
+
+	p, ok := req.ProviderData.(*woodpeckerProvider)
+
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *woodpeckerProvider, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return
+	}
+
+	r.p = *p
 }
 
-type dataSourceSelf struct {
-	p woodpeckerProvider
-}
-
-func (r dataSourceSelf) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (r DataSourceSelf) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var resourceData User
 	self := r.p.self
 

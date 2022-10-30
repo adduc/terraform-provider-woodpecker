@@ -7,15 +7,24 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type resourceRepositoryType struct{}
+func NewRepositoryResource() resource.Resource {
+	return &ResourceRepository{}
+}
 
-func (r resourceRepositoryType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+type ResourceRepository struct {
+	p woodpeckerProvider
+}
+
+func (r ResourceRepository) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_repository"
+}
+
+func (r ResourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			// Required Attributes
@@ -112,17 +121,27 @@ func (r resourceRepositoryType) GetSchema(_ context.Context) (tfsdk.Schema, diag
 	}, nil
 }
 
-func (r resourceRepositoryType) NewResource(_ context.Context, p provider.Provider) (resource.Resource, diag.Diagnostics) {
-	return resourceRepository{
-		p: *(p.(*woodpeckerProvider)),
-	}, nil
+func (r *ResourceRepository) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return
+	}
+
+	p, ok := req.ProviderData.(*woodpeckerProvider)
+
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *woodpeckerProvider, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return
+	}
+
+	r.p = *p
 }
 
-type resourceRepository struct {
-	p woodpeckerProvider
-}
-
-func (r resourceRepository) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r ResourceRepository) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// unmarshall request config into resourceData
 	var resourceData Repository
 	diags := req.Config.Get(ctx, &resourceData)
@@ -171,7 +190,7 @@ func (r resourceRepository) Create(ctx context.Context, req resource.CreateReque
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r resourceRepository) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+func (r ResourceRepository) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if req.State.Raw.IsNull() {
 		// if we're creating the resource, no need to delete and recreate it
 		return
@@ -224,7 +243,7 @@ func (r resourceRepository) ModifyPlan(ctx context.Context, req resource.ModifyP
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r resourceRepository) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r ResourceRepository) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// unmarshall request config into resourceData
 	var resourceData Repository
 	diags := req.State.Get(ctx, &resourceData)
@@ -250,7 +269,7 @@ func (r resourceRepository) Read(ctx context.Context, req resource.ReadRequest, 
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r resourceRepository) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r ResourceRepository) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 
 	var repoPlan Repository
 	diags := req.Plan.Get(ctx, &repoPlan)
@@ -284,7 +303,7 @@ func (r resourceRepository) Update(ctx context.Context, req resource.UpdateReque
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r resourceRepository) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r ResourceRepository) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 
 	var repoState Repository
 	diags := req.State.Get(ctx, &repoState)
@@ -307,7 +326,7 @@ func (r resourceRepository) Delete(ctx context.Context, req resource.DeleteReque
 	resp.State.RemoveResource(ctx)
 }
 
-func (r resourceRepository) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r ResourceRepository) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	idParts := strings.Split(req.ID, "/")
 
 	if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
