@@ -3,7 +3,7 @@ module github.com/adduc/terraform-provider-woodpecker
 go 1.18
 
 require (
-	github.com/hashicorp/terraform-plugin-framework v0.13.0
+	github.com/hashicorp/terraform-plugin-framework v0.14.0
 	github.com/woodpecker-ci/woodpecker v0.15.1-0.20221029172847-a5e1714039e8
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 )
