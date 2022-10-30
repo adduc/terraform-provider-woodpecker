@@ -58,3 +58,52 @@ func prepareRepositoryPatch(resourceData Repository) *woodpecker.RepoPatch {
 
 	return &patch
 }
+
+func WoodpeckerToRepositoryCron(wCron woodpecker.Cron, cron *RepositoryCron) {
+	cron.ID = types.Int64{Value: wCron.ID}
+	cron.Name = types.String{Value: wCron.Name}
+	cron.RepoID = types.Int64{Value: wCron.RepoID}
+	cron.CreatorID = types.Int64{Value: wCron.CreatorID}
+	cron.NextExec = types.Int64{Value: wCron.NextExec}
+	cron.Schedule = types.String{Value: wCron.Schedule}
+	cron.Created = types.Int64{Value: wCron.Created}
+	cron.Branch = types.String{Value: wCron.Branch}
+}
+
+func prepareRepositoryCronPatch(resourceData RepositoryCron) *woodpecker.Cron {
+	patch := woodpecker.Cron{}
+
+	if !resourceData.ID.IsNull() && !resourceData.ID.IsUnknown() {
+		patch.ID = resourceData.ID.ValueInt64()
+	}
+
+	if !resourceData.Name.IsNull() && !resourceData.Name.IsUnknown() {
+		patch.Name = resourceData.Name.ValueString()
+	}
+
+	if !resourceData.RepoID.IsNull() && !resourceData.RepoID.IsUnknown() {
+		patch.RepoID = resourceData.RepoID.ValueInt64()
+	}
+
+	if !resourceData.CreatorID.IsNull() && !resourceData.CreatorID.IsUnknown() {
+		patch.CreatorID = resourceData.CreatorID.ValueInt64()
+	}
+
+	if !resourceData.NextExec.IsNull() && !resourceData.NextExec.IsUnknown() {
+		patch.NextExec = resourceData.NextExec.ValueInt64()
+	}
+
+	if !resourceData.Schedule.IsNull() && !resourceData.Schedule.IsUnknown() {
+		patch.Schedule = resourceData.Schedule.ValueString()
+	}
+
+	if !resourceData.Created.IsNull() && !resourceData.Created.IsUnknown() {
+		patch.Created = resourceData.Created.ValueInt64()
+	}
+
+	if !resourceData.Branch.IsNull() && !resourceData.Branch.IsUnknown() {
+		patch.Branch = resourceData.Branch.ValueString()
+	}
+
+	return &patch
+}

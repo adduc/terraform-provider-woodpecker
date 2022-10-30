@@ -30,3 +30,16 @@ type User struct {
 	Active types.Bool   `tfsdk:"active"`
 	Admin  types.Bool   `tfsdk:"admin"`
 }
+
+type RepositoryCron struct {
+	RepoOwner types.String `tfsdk:"repo_owner"`
+	RepoName  types.String `tfsdk:"repo_name"`
+	ID        types.Int64  `tfsdk:"id"`
+	Name      types.String `tfsdk:"name"`
+	RepoID    types.Int64  `tfsdk:"repo_id"`
+	CreatorID types.Int64  `tfsdk:"creator_id"`
+	NextExec  types.Int64  `tfsdk:"next_exec"`
+	Schedule  types.String `tfsdk:"schedule"`
+	Created   types.Int64  `tfsdk:"created"`
+	Branch    types.String `tfsdk:"branch"`
+}

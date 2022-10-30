@@ -173,14 +173,14 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 	_, err = r.p.client.RepoPatch(repoOwner, repoName, patch)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Could not update reposiotry", err.Error())
+		resp.Diagnostics.AddError("Could not update repository", err.Error())
 		return
 	}
 
 	repo, err := r.p.client.Repo(repoOwner, repoName)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Could not refresh reposiotry", err.Error())
+		resp.Diagnostics.AddError("Could not refresh repository", err.Error())
 		return
 	}
 
