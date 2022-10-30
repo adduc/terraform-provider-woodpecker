@@ -1,11 +1,10 @@
-HOSTNAME?=github.com
 NAMESPACE=adduc
 NAME=woodpecker
 BINARY=terraform-provider-$(NAME)
 VERSION=0.0.1-dev
 OS=$(shell uname | tr '[:upper:]' '[:lower:]')
 ARCH=$(shell uname -i | sed 's/x86_64/amd64/')
-DIR=${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/$(OS)_$(ARCH)
+DIR=terraform.local/${NAMESPACE}/${NAME}/${VERSION}/$(OS)_$(ARCH)
 
 build:
 	go build -o artifacts/$(BINARY)
@@ -13,8 +12,6 @@ build:
 install: build
 	mkdir -p ~/.terraform.d/plugins/$(DIR)
 	cp artifacts/$(BINARY) ~/.terraform.d/plugins/$(DIR)
-	cd demo && rm -rf .terraform.lock.hcl .terraform
-	cd demo && terraform init
 
 test-reset: install
 	cd demo && rm -rf terraform.tfstate \

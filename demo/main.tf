@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     woodpecker = {
-      source  = "jlong-ryzen-desktop/adduc/woodpecker"
+      source  = "terraform.local/adduc/woodpecker"
       version = "0.0.1-dev"
     }
   }
