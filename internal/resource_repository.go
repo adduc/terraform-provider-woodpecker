@@ -151,8 +151,8 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	// fetch repo
-	repoOwner := resourceData.Owner.Value
-	repoName := resourceData.Name.Value
+	repoOwner := resourceData.Owner.ValueString()
+	repoName := resourceData.Name.ValueString()
 
 	_, err := r.p.client.Repo(repoOwner, repoName)
 
@@ -219,23 +219,23 @@ func (r ResourceRepository) ModifyPlan(ctx context.Context, req resource.ModifyP
 	plan.Clone = state.Clone
 	plan.Branch = state.Branch
 
-	if plan.Visibility.Unknown {
+	if plan.Visibility.IsUnknown() {
 		plan.Visibility = state.Visibility
 	}
 
-	if plan.IsGated.Unknown {
+	if plan.IsGated.IsUnknown() {
 		plan.IsGated = state.IsGated
 	}
 
-	if plan.IsTrusted.Unknown {
+	if plan.IsTrusted.IsUnknown() {
 		plan.IsTrusted = state.IsTrusted
 	}
 
-	if plan.AllowPull.Unknown {
+	if plan.AllowPull.IsUnknown() {
 		plan.AllowPull = state.AllowPull
 	}
 
-	if plan.Timeout.Unknown {
+	if plan.Timeout.IsUnknown() {
 		plan.Timeout = state.Timeout
 	}
 
@@ -253,8 +253,8 @@ func (r ResourceRepository) Read(ctx context.Context, req resource.ReadRequest, 
 	}
 
 	// fetch repo
-	repoOwner := resourceData.Owner.Value
-	repoName := resourceData.Name.Value
+	repoOwner := resourceData.Owner.ValueString()
+	repoName := resourceData.Name.ValueString()
 
 	repo, err := r.p.client.Repo(repoOwner, repoName)
 
@@ -285,8 +285,8 @@ func (r ResourceRepository) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	repoOwner := repoState.Owner.Value
-	repoName := repoState.Name.Value
+	repoOwner := repoState.Owner.ValueString()
+	repoName := repoState.Name.ValueString()
 
 	patch := prepareRepositoryPatch(repoPlan)
 
@@ -312,8 +312,8 @@ func (r ResourceRepository) Delete(ctx context.Context, req resource.DeleteReque
 		return
 	}
 
-	repoOwner := repoState.Owner.Value
-	repoName := repoState.Name.Value
+	repoOwner := repoState.Owner.ValueString()
+	repoName := repoState.Name.ValueString()
 
 	err := r.p.client.RepoDel(repoOwner, repoName)
 

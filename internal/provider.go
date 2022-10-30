@@ -92,15 +92,15 @@ func (p *woodpeckerProvider) createProviderConfiguration(
 		return config
 	}
 
-	if config.Server.Null {
+	if config.Server.IsNull() {
 		config.Server = types.String{Value: os.Getenv("WOODPECKER_SERVER")}
 	}
 
-	if config.Token.Null {
+	if config.Token.IsNull() {
 		config.Token = types.String{Value: os.Getenv("WOODPECKER_TOKEN")}
 	}
 
-	if config.Verify.Null {
+	if config.Verify.IsNull() {
 		config.Verify = types.Bool{Value: os.Getenv("WOODPECKER_VERIFY") != "0"}
 	}
 
@@ -116,10 +116,10 @@ func (p *woodpeckerProvider) createClient(
 	oauth_config := new(oauth2.Config)
 
 	authenticator := oauth_config.Client(ctx, &oauth2.Token{
-		AccessToken: config.Token.Value,
+		AccessToken: config.Token.ValueString(),
 	})
 
-	client := woodpecker.NewClient(config.Server.Value, authenticator)
+	client := woodpecker.NewClient(config.Server.ValueString(), authenticator)
 
 	self, err := client.Self()
 

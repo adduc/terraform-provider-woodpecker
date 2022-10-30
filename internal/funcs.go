@@ -7,6 +7,8 @@ import (
 
 func WoodpeckerToRepository(wRepo woodpecker.Repo, repo *Repository) {
 	repo.ID = types.Int64{Value: wRepo.ID}
+	repo.Owner = types.String{Value: wRepo.Owner}
+	repo.Name = types.String{Value: wRepo.Name}
 	repo.FullName = types.String{Value: wRepo.FullName}
 	repo.Avatar = types.String{Value: wRepo.Avatar}
 	repo.Link = types.String{Value: wRepo.Link}
@@ -24,28 +26,34 @@ func WoodpeckerToRepository(wRepo woodpecker.Repo, repo *Repository) {
 func prepareRepositoryPatch(resourceData Repository) *woodpecker.RepoPatch {
 	patch := woodpecker.RepoPatch{}
 
-	if !resourceData.Config.Null && !resourceData.Config.Unknown {
-		patch.Config = &resourceData.Config.Value
+	if !resourceData.Config.IsNull() && !resourceData.Config.IsUnknown() {
+		value := resourceData.Config.ValueString()
+		patch.Config = &value
 	}
 
-	if !resourceData.IsTrusted.Null && !resourceData.IsTrusted.Unknown {
-		patch.IsTrusted = &resourceData.IsTrusted.Value
+	if !resourceData.IsTrusted.IsNull() && !resourceData.IsTrusted.IsUnknown() {
+		value := resourceData.IsTrusted.ValueBool()
+		patch.IsTrusted = &value
 	}
 
-	if !resourceData.IsGated.Null && !resourceData.IsGated.Unknown {
-		patch.IsGated = &resourceData.IsGated.Value
+	if !resourceData.IsGated.IsNull() && !resourceData.IsGated.IsUnknown() {
+		value := resourceData.IsGated.ValueBool()
+		patch.IsGated = &value
 	}
 
-	if !resourceData.Timeout.Null && !resourceData.Timeout.Unknown {
-		patch.Timeout = &resourceData.Timeout.Value
+	if !resourceData.Timeout.IsNull() && !resourceData.Timeout.IsUnknown() {
+		value := resourceData.Timeout.ValueInt64()
+		patch.Timeout = &value
 	}
 
-	if !resourceData.Visibility.Null && !resourceData.Visibility.Unknown {
-		patch.Visibility = &resourceData.Visibility.Value
+	if !resourceData.Visibility.IsNull() && !resourceData.Visibility.IsUnknown() {
+		value := resourceData.Visibility.ValueString()
+		patch.Visibility = &value
 	}
 
-	if !resourceData.AllowPull.Null && !resourceData.AllowPull.Unknown {
-		patch.AllowPull = &resourceData.AllowPull.Value
+	if !resourceData.AllowPull.IsNull() && !resourceData.AllowPull.IsUnknown() {
+		value := resourceData.AllowPull.ValueBool()
+		patch.AllowPull = &value
 	}
 
 	return &patch

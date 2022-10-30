@@ -139,8 +139,8 @@ func (r DataSourceRepository) Read(ctx context.Context, req datasource.ReadReque
 	}
 
 	// fetch repo
-	repoOwner := resourceData.Owner.Value
-	repoName := resourceData.Name.Value
+	repoOwner := resourceData.Owner.ValueString()
+	repoName := resourceData.Name.ValueString()
 
 	repo, err := r.p.client.Repo(repoOwner, repoName)
 	if err != nil {
