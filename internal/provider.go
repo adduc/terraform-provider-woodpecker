@@ -5,23 +5,24 @@ import (
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 	"golang.org/x/oauth2"
 )
 
-func New() tfsdk.Provider {
-	return &provider{}
+func New() provider.Provider {
+	return &woodpeckerProvider{}
 }
 
-type provider struct {
+type woodpeckerProvider struct {
 	config providerConfig
 	client woodpecker.Client
 	self   *woodpecker.User
 }
 
-func (p *provider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (p *woodpeckerProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"server": {
@@ -40,20 +41,20 @@ func (p *provider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics)
 	}, nil
 }
 
-func (p *provider) GetDataSources(_ context.Context) (map[string]tfsdk.DataSourceType, diag.Diagnostics) {
-	return map[string]tfsdk.DataSourceType{
+func (p *woodpeckerProvider) GetDataSources(_ context.Context) (map[string]provider.DataSourceType, diag.Diagnostics) {
+	return map[string]provider.DataSourceType{
 		"woodpecker_repository": dataSourceRepositoryType{},
 		"woodpecker_self":       dataSourceSelfType{},
 	}, nil
 }
 
-func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
-	return map[string]tfsdk.ResourceType{
+func (p *woodpeckerProvider) GetResources(_ context.Context) (map[string]provider.ResourceType, diag.Diagnostics) {
+	return map[string]provider.ResourceType{
 		"woodpecker_repository": resourceRepositoryType{},
 	}, nil
 }
 
-func (p *provider) Configure(ctx context.Context, req tfsdk.ConfigureProviderRequest, resp *tfsdk.ConfigureProviderResponse) {
+func (p *woodpeckerProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 
 	p.config = p.createProviderConfiguration(ctx, req, resp)
 
@@ -70,10 +71,10 @@ type providerConfig struct {
 	Verify types.Bool   `tfsdk:"verify"`
 }
 
-func (p *provider) createProviderConfiguration(
+func (p *woodpeckerProvider) createProviderConfiguration(
 	ctx context.Context,
-	req tfsdk.ConfigureProviderRequest,
-	resp *tfsdk.ConfigureProviderResponse,
+	req provider.ConfigureRequest,
+	resp *provider.ConfigureResponse,
 ) providerConfig {
 	var config providerConfig
 	diags := req.Config.Get(ctx, &config)
@@ -98,10 +99,10 @@ func (p *provider) createProviderConfiguration(
 	return config
 }
 
-func (p *provider) createClient(
+func (p *woodpeckerProvider) createClient(
 	ctx context.Context,
 	config providerConfig,
-	resp *tfsdk.ConfigureProviderResponse,
+	resp *provider.ConfigureResponse,
 ) (woodpecker.Client, *woodpecker.User) {
 
 	oauth_config := new(oauth2.Config)

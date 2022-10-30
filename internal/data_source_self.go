@@ -3,7 +3,9 @@ package internal
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -47,17 +49,17 @@ func (r dataSourceSelfType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 	}, nil
 }
 
-func (r dataSourceSelfType) NewDataSource(_ context.Context, p tfsdk.Provider) (tfsdk.DataSource, diag.Diagnostics) {
+func (r dataSourceSelfType) NewDataSource(_ context.Context, p provider.Provider) (datasource.DataSource, diag.Diagnostics) {
 	return dataSourceSelf{
-		p: *(p.(*provider)),
+		p: *(p.(*woodpeckerProvider)),
 	}, nil
 }
 
 type dataSourceSelf struct {
-	p provider
+	p woodpeckerProvider
 }
 
-func (r dataSourceSelf) Read(ctx context.Context, req tfsdk.ReadDataSourceRequest, resp *tfsdk.ReadDataSourceResponse) {
+func (r dataSourceSelf) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var resourceData User
 	self := r.p.self
 

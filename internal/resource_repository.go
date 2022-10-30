@@ -7,6 +7,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -110,17 +112,17 @@ func (r resourceRepositoryType) GetSchema(_ context.Context) (tfsdk.Schema, diag
 	}, nil
 }
 
-func (r resourceRepositoryType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
+func (r resourceRepositoryType) NewResource(_ context.Context, p provider.Provider) (resource.Resource, diag.Diagnostics) {
 	return resourceRepository{
-		p: *(p.(*provider)),
+		p: *(p.(*woodpeckerProvider)),
 	}, nil
 }
 
 type resourceRepository struct {
-	p provider
+	p woodpeckerProvider
 }
 
-func (r resourceRepository) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
+func (r resourceRepository) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// unmarshall request config into resourceData
 	var resourceData Repository
 	diags := req.Config.Get(ctx, &resourceData)
@@ -169,7 +171,7 @@ func (r resourceRepository) Create(ctx context.Context, req tfsdk.CreateResource
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r resourceRepository) ModifyPlan(ctx context.Context, req tfsdk.ModifyResourcePlanRequest, resp *tfsdk.ModifyResourcePlanResponse) {
+func (r resourceRepository) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if req.State.Raw.IsNull() {
 		// if we're creating the resource, no need to delete and recreate it
 		return
@@ -222,7 +224,7 @@ func (r resourceRepository) ModifyPlan(ctx context.Context, req tfsdk.ModifyReso
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r resourceRepository) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
+func (r resourceRepository) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// unmarshall request config into resourceData
 	var resourceData Repository
 	diags := req.State.Get(ctx, &resourceData)
@@ -248,7 +250,7 @@ func (r resourceRepository) Read(ctx context.Context, req tfsdk.ReadResourceRequ
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r resourceRepository) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+func (r resourceRepository) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 
 	var repoPlan Repository
 	diags := req.Plan.Get(ctx, &repoPlan)
@@ -282,7 +284,7 @@ func (r resourceRepository) Update(ctx context.Context, req tfsdk.UpdateResource
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r resourceRepository) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+func (r resourceRepository) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 
 	var repoState Repository
 	diags := req.State.Get(ctx, &repoState)
@@ -305,7 +307,7 @@ func (r resourceRepository) Delete(ctx context.Context, req tfsdk.DeleteResource
 	resp.State.RemoveResource(ctx)
 }
 
-func (r resourceRepository) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
+func (r resourceRepository) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	idParts := strings.Split(req.ID, "/")
 
 	if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
