@@ -136,6 +136,46 @@ func (r ResourceRepositoryCron) Create(ctx context.Context, req resource.CreateR
 }
 
 func (r ResourceRepositoryCron) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.State.Raw.IsNull() {
+		// if we're creating the resource, no need to delete and recreate it
+		return
+	}
+
+	if req.Plan.Raw.IsNull() {
+		// if we're deleting the resource, no need to delete and recreate it
+		return
+	}
+
+	var plan, state RepositoryCron
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	plan.Created = state.Created
+	plan.CreatorID = state.CreatorID
+	plan.ID = state.ID
+	plan.RepoID = state.RepoID
+	plan.RepoName = state.RepoName
+	plan.RepoOwner = state.RepoOwner
+
+	if plan.Branch.IsUnknown() {
+		plan.Branch = state.Branch
+	}
+
+	if plan.Name.IsUnknown() {
+		plan.Name = state.Name
+	}
+
+	if plan.Schedule.IsUnknown() {
+		plan.Schedule = state.Schedule
+	}
+
+	diags = resp.Plan.Set(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
 }
 
 func (r ResourceRepositoryCron) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
