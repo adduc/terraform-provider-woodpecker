@@ -199,6 +199,26 @@ func (r ResourceRepositoryCron) Update(ctx context.Context, req resource.UpdateR
 }
 
 func (r ResourceRepositoryCron) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var repoState RepositoryCron
+	diags := req.State.Get(ctx, &repoState)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	repoOwner := repoState.RepoOwner.ValueString()
+	repoName := repoState.RepoName.ValueString()
+	repoId := repoState.ID.ValueInt64()
+
+	err := r.client.CronDelete(repoOwner, repoName, repoId)
+
+	if err != nil {
+		resp.Diagnostics.AddError("Error deleting repository", err.Error())
+		return
+	}
+
+	// Remove resource from state
+	resp.State.RemoveResource(ctx)
 }
 
 func (r ResourceRepositoryCron) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
