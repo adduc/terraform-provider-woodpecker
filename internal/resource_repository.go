@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
 
 func NewRepositoryResource() resource.Resource {
@@ -17,7 +18,7 @@ func NewRepositoryResource() resource.Resource {
 }
 
 type ResourceRepository struct {
-	p woodpeckerProvider
+	client woodpecker.Client
 }
 
 func (r ResourceRepository) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -138,7 +139,7 @@ func (r *ResourceRepository) Configure(_ context.Context, req resource.Configure
 		return
 	}
 
-	r.p = *p
+	r.client = p.client
 }
 
 func (r ResourceRepository) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -154,14 +155,14 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 	repoOwner := resourceData.Owner.ValueString()
 	repoName := resourceData.Name.ValueString()
 
-	_, err := r.p.client.Repo(repoOwner, repoName)
+	_, err := r.client.Repo(repoOwner, repoName)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not fetch repository information", err.Error())
 		return
 	}
 
-	_, err = r.p.client.RepoPost(repoOwner, repoName)
+	_, err = r.client.RepoPost(repoOwner, repoName)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not activate repository", err.Error())
@@ -170,14 +171,14 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 
 	patch := prepareRepositoryPatch(resourceData)
 
-	_, err = r.p.client.RepoPatch(repoOwner, repoName, patch)
+	_, err = r.client.RepoPatch(repoOwner, repoName, patch)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not update repository", err.Error())
 		return
 	}
 
-	repo, err := r.p.client.Repo(repoOwner, repoName)
+	repo, err := r.client.Repo(repoOwner, repoName)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not refresh repository", err.Error())
@@ -256,7 +257,7 @@ func (r ResourceRepository) Read(ctx context.Context, req resource.ReadRequest, 
 	repoOwner := resourceData.Owner.ValueString()
 	repoName := resourceData.Name.ValueString()
 
-	repo, err := r.p.client.Repo(repoOwner, repoName)
+	repo, err := r.client.Repo(repoOwner, repoName)
 
 	if err != nil {
 		resp.Diagnostics.AddError(err.Error(), "")
@@ -290,10 +291,10 @@ func (r ResourceRepository) Update(ctx context.Context, req resource.UpdateReque
 
 	patch := prepareRepositoryPatch(repoPlan)
 
-	repo, err := r.p.client.RepoPatch(repoOwner, repoName, patch)
+	repo, err := r.client.RepoPatch(repoOwner, repoName, patch)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Could not update reposiotry", err.Error())
+		resp.Diagnostics.AddError("Could not update repository", err.Error())
 		return
 	}
 
@@ -315,7 +316,7 @@ func (r ResourceRepository) Delete(ctx context.Context, req resource.DeleteReque
 	repoOwner := repoState.Owner.ValueString()
 	repoName := repoState.Name.ValueString()
 
-	err := r.p.client.RepoDel(repoOwner, repoName)
+	err := r.client.RepoDel(repoOwner, repoName)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Error deleting repository", err.Error())
