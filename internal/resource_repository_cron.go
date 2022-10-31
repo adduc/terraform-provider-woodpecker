@@ -97,7 +97,7 @@ func (r *ResourceRepositoryCron) Configure(_ context.Context, req resource.Confi
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *woodpecker.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *woodpeckerProvider, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -127,6 +127,8 @@ func (r ResourceRepositoryCron) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
+	resourceData.RepoOwner = types.String{Value: repoOwner}
+	resourceData.RepoName = types.String{Value: repoName}
 	WoodpeckerToRepositoryCron(*cron, &resourceData)
 
 	diags = resp.State.Set(ctx, &resourceData)
@@ -137,9 +139,63 @@ func (r ResourceRepositoryCron) ModifyPlan(ctx context.Context, req resource.Mod
 }
 
 func (r ResourceRepositoryCron) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	// unmarshall request config into resourceData
+	var resourceData RepositoryCron
+	diags := req.State.Get(ctx, &resourceData)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// fetch repo
+	repoOwner := resourceData.RepoOwner.ValueString()
+	repoName := resourceData.RepoName.ValueString()
+	cronId := resourceData.ID.ValueInt64()
+
+	cron, err := r.client.CronGet(repoOwner, repoName, cronId)
+
+	if err != nil {
+		resp.Diagnostics.AddError(err.Error(), "")
+		return
+	}
+
+	WoodpeckerToRepositoryCron(*cron, &resourceData)
+
+	diags = resp.State.Set(ctx, &resourceData)
+	resp.Diagnostics.Append(diags...)
 }
 
 func (r ResourceRepositoryCron) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var repoCronPlan RepositoryCron
+	diags := req.Plan.Get(ctx, &repoCronPlan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var repoCronState RepositoryCron
+	diags = req.State.Get(ctx, &repoCronState)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	repoOwner := repoCronState.RepoOwner.ValueString()
+	repoName := repoCronState.RepoName.ValueString()
+
+	cron := prepareRepositoryCronPatch(repoCronPlan)
+
+	cron, err := r.client.CronUpdate(repoOwner, repoName, cron)
+
+	if err != nil {
+		resp.Diagnostics.AddError("Could not update repository cron", err.Error())
+		return
+	}
+
+	WoodpeckerToRepositoryCron(*cron, &repoCronState)
+
+	diags = resp.State.Set(ctx, &repoCronState)
+	resp.Diagnostics.Append(diags...)
 }
 
 func (r ResourceRepositoryCron) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
