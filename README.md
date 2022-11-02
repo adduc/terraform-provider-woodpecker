@@ -12,3 +12,4 @@ welcome.
 ## Resources
 
 - woodpecker_repository
+- woodpecker_repository_cron
