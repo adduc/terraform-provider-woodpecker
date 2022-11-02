@@ -273,7 +273,29 @@ func (r ResourceRepositoryCron) ImportState(ctx context.Context, req resource.Im
 		return
 	}
 
-	// Search for cron to determine its ID
+	repoOwner := idParts[0]
+	repoName := idParts[1]
+	cronName := idParts[2]
 
-	resp.Diagnostics.AddError("todo: implement", "")
+	crons, err := r.client.CronList(repoOwner, repoName)
+
+	if err != nil {
+		resp.Diagnostics.AddError("Could not fetch repository's cron list", err.Error())
+		return
+	}
+
+	var cron RepositoryCron
+
+	for _, wCron := range crons {
+		if wCron.Name == cronName {
+			WoodpeckerToRepositoryCron(*wCron, &cron)
+			cron.RepoOwner = types.String{Value: repoOwner}
+			cron.RepoName = types.String{Value: repoName}
+			diags := resp.State.Set(ctx, &cron)
+			resp.Diagnostics.Append(diags...)
+			return
+		}
+	}
+
+	resp.Diagnostics.AddError("Could not find cron with provided name", "")
 }
