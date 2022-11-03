@@ -8,6 +8,7 @@ welcome.
 
 - woodpecker_self
 - woodpecker_repository
+- woodpecker_repository_cron
 
 ## Resources
 
