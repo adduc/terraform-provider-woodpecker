@@ -13,6 +13,9 @@ install: build
 	mkdir -p ~/.terraform.d/plugins/$(DIR)
 	cp artifacts/$(BINARY) ~/.terraform.d/plugins/$(DIR)
 
+doc:
+	tfplugindocs
+
 test-reset: install
 	cd demo && rm -rf terraform.tfstate \
 

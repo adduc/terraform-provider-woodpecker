@@ -5,7 +5,7 @@ description: |-
   configuration of Woodpecker CI instances.
 ---
 
-# WOODPECKER Provider
+# Woodpecker Provider
 
 ## Example Usage
 
