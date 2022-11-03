@@ -24,6 +24,7 @@ func (d *DataSourceSelf) Metadata(_ context.Context, req datasource.MetadataRequ
 
 func (r DataSourceSelf) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		MarkdownDescription: "Use this data source to get information on the authenticated user used by Terraform",
 		Attributes: map[string]tfsdk.Attribute{
 			"id": {
 				Type:        types.Int64Type,

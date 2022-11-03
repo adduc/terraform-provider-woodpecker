@@ -27,6 +27,8 @@ func (r ResourceRepository) Metadata(_ context.Context, req resource.MetadataReq
 
 func (r ResourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		MarkdownDescription: "Provides a repository resource.",
+
 		Attributes: map[string]tfsdk.Attribute{
 			// Required Attributes
 			"owner": {

@@ -25,6 +25,8 @@ func (d *DataSourceRepositoryCron) Metadata(_ context.Context, req datasource.Me
 
 func (r DataSourceRepositoryCron) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		MarkdownDescription: "Use this data source to get information on an existing cron for a repository",
+
 		Attributes: map[string]tfsdk.Attribute{
 
 			// Required Attributes

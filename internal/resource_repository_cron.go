@@ -26,6 +26,9 @@ func (r ResourceRepositoryCron) Metadata(_ context.Context, req resource.Metadat
 
 func (r ResourceRepositoryCron) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		MarkdownDescription: `Provides a repository resource. For more 
+		information see [Woodpecker CI's documentation](https://woodpecker-ci.org/docs/next/usage/cron)`,
+
 		Attributes: map[string]tfsdk.Attribute{
 			// Required Attributes
 			"repo_owner": {

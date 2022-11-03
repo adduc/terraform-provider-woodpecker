@@ -24,6 +24,8 @@ func (d *DataSourceRepository) Metadata(_ context.Context, req datasource.Metada
 
 func (r DataSourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		MarkdownDescription: "Use this data source to get information on an existing repository",
+
 		Attributes: map[string]tfsdk.Attribute{
 			"id": {
 				Type:        types.Int64Type,
