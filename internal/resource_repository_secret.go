@@ -121,8 +121,6 @@ func (r ResourceRepositorySecret) Create(ctx context.Context, req resource.Creat
 	repoOwner := resourceData.RepoOwner.ValueString()
 	repoName := resourceData.RepoName.ValueString()
 
-	///////
-
 	secret, diags := prepareRepositorySecretPatch(ctx, resourceData)
 
 	resp.Diagnostics.Append(diags...)

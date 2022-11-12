@@ -235,9 +235,9 @@ func (r ResourceRepositoryCron) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	WoodpeckerToRepositoryCron(*cron, &repoCronState)
+	WoodpeckerToRepositoryCron(*cron, &repoCronPlan)
 
-	diags = resp.State.Set(ctx, &repoCronState)
+	diags = resp.State.Set(ctx, &repoCronPlan)
 	resp.Diagnostics.Append(diags...)
 }
 

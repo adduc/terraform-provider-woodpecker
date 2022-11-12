@@ -300,9 +300,9 @@ func (r ResourceRepository) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	WoodpeckerToRepository(*repo, &repoState)
+	WoodpeckerToRepository(*repo, &repoPlan)
 
-	diags = resp.State.Set(ctx, &repoState)
+	diags = resp.State.Set(ctx, &repoPlan)
 	resp.Diagnostics.Append(diags...)
 }
 
