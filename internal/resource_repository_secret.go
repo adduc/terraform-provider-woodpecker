@@ -53,7 +53,7 @@ func (r ResourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Type:        types.StringType,
 				Required:    true,
 				Description: "Secret Value",
-				// Sensitive:   true,
+				Sensitive:   true,
 			},
 
 			// Optional Attributes
@@ -74,9 +74,9 @@ func (r ResourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Optional:    true,
 				Computed:    true,
 				Description: "Available at following events (one of push, tag, pull_request, deployment, cron, manual)",
-				// Validators:  []tfsdk.AttributeValidator{},
-				// 	validators.StringInSlice(false, "push", "tag", "pull_request", "deployment", "cron", "manual"),
-				// },
+				Validators: []tfsdk.AttributeValidator{
+					&ValidateSetInSlice{values: []string{"push", "tag", "pull_request", "deployment", "cron", "manual"}},
+				},
 			},
 
 			// Computed
