@@ -54,3 +54,13 @@ type RepositorySecret struct {
 	Images      types.Set    `tfsdk:"images"`
 	Events      types.Set    `tfsdk:"events"`
 }
+
+type RepositorySecretData struct {
+	RepoOwner   types.String `tfsdk:"repo_owner"`
+	RepoName    types.String `tfsdk:"repo_name"`
+	ID          types.Int64  `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	PluginsOnly types.Bool   `tfsdk:"plugins_only"`
+	Images      types.Set    `tfsdk:"images"`
+	Events      types.Set    `tfsdk:"events"`
+}

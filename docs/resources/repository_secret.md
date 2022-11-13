@@ -23,7 +23,7 @@ Provides a repository secret. For more
 
 ### Optional
 
-- `events` (Set of String) Available at following events (one of push, tag, pull_request, deployment, cron, manual)
+- `events` (Set of String) One or more event types where secret is available (one of push, tag, pull_request, deployment, cron, manual)
 - `images` (Set of String) List of images where this secret is available, leave empty to allow all images
 - `plugins_only` (Boolean) Whether secret is only available for plugins
 

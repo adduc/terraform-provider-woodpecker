@@ -82,7 +82,7 @@ func (r ResourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Type:        types.SetType{ElemType: types.StringType},
 				Optional:    true,
 				Computed:    true,
-				Description: "Available at following events (one of push, tag, pull_request, deployment, cron, manual)",
+				Description: "One or more event types where secret is available (one of push, tag, pull_request, deployment, cron, manual)",
 				Validators: []tfsdk.AttributeValidator{
 					&ValidateSetInSlice{values: []string{"push", "tag", "pull_request", "deployment", "cron", "manual"}},
 				},
