@@ -38,16 +38,25 @@ func (r ResourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Type:        types.StringType,
 				Required:    true,
 				Description: "User or organization responsible for repository",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 			"repo_name": {
 				Type:        types.StringType,
 				Required:    true,
 				Description: "Repository name",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 			"name": {
 				Type:        types.StringType,
 				Required:    true,
 				Description: "Secret Name",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 			"value": {
 				Type:        types.StringType,
