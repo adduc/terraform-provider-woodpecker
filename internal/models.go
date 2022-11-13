@@ -43,3 +43,24 @@ type RepositoryCron struct {
 	Created   types.Int64  `tfsdk:"created"`
 	Branch    types.String `tfsdk:"branch"`
 }
+
+type RepositorySecret struct {
+	RepoOwner   types.String `tfsdk:"repo_owner"`
+	RepoName    types.String `tfsdk:"repo_name"`
+	ID          types.Int64  `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	Value       types.String `tfsdk:"value"`
+	PluginsOnly types.Bool   `tfsdk:"plugins_only"`
+	Images      types.Set    `tfsdk:"images"`
+	Events      types.Set    `tfsdk:"events"`
+}
+
+type RepositorySecretData struct {
+	RepoOwner   types.String `tfsdk:"repo_owner"`
+	RepoName    types.String `tfsdk:"repo_name"`
+	ID          types.Int64  `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	PluginsOnly types.Bool   `tfsdk:"plugins_only"`
+	Images      types.Set    `tfsdk:"images"`
+	Events      types.Set    `tfsdk:"events"`
+}

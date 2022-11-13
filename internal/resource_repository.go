@@ -35,11 +35,17 @@ func (r ResourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Type:        types.StringType,
 				Required:    true,
 				Description: "User or organization responsible for repository",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 			"name": {
 				Type:        types.StringType,
 				Required:    true,
 				Description: "Repository name",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 
 			// Optional Attributes
@@ -157,7 +163,16 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 	repoOwner := resourceData.Owner.ValueString()
 	repoName := resourceData.Name.ValueString()
 
-	_, err := r.client.Repo(repoOwner, repoName)
+	_, err := r.client.RepoListOpts(true, false)
+
+	// TODO consider refreshing repository list only if repository does not exist
+
+	if err != nil {
+		resp.Diagnostics.AddError("Could not refresh list of repositories", err.Error())
+		return
+	}
+
+	_, err = r.client.Repo(repoOwner, repoName)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not fetch repository information", err.Error())
@@ -300,9 +315,9 @@ func (r ResourceRepository) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	WoodpeckerToRepository(*repo, &repoState)
+	WoodpeckerToRepository(*repo, &repoPlan)
 
-	diags = resp.State.Set(ctx, &repoState)
+	diags = resp.State.Set(ctx, &repoPlan)
 	resp.Diagnostics.Append(diags...)
 }
 

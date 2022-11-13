@@ -35,11 +35,17 @@ func (r ResourceRepositoryCron) GetSchema(_ context.Context) (tfsdk.Schema, diag
 				Type:        types.StringType,
 				Required:    true,
 				Description: "User or organization responsible for repository",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 			"repo_name": {
 				Type:        types.StringType,
 				Required:    true,
 				Description: "Repository name",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 			"name": {
 				Type:        types.StringType,
@@ -161,9 +167,14 @@ func (r ResourceRepositoryCron) ModifyPlan(ctx context.Context, req resource.Mod
 	plan.Created = state.Created
 	plan.CreatorID = state.CreatorID
 	plan.ID = state.ID
-	plan.RepoID = state.RepoID
-	plan.RepoName = state.RepoName
-	plan.RepoOwner = state.RepoOwner
+
+	if plan.RepoName.IsUnknown() {
+		plan.RepoName = state.RepoName
+	}
+
+	if plan.RepoOwner.IsUnknown() {
+		plan.RepoOwner = state.RepoOwner
+	}
 
 	if plan.Branch.IsUnknown() {
 		plan.Branch = state.Branch
@@ -235,9 +246,9 @@ func (r ResourceRepositoryCron) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	WoodpeckerToRepositoryCron(*cron, &repoCronState)
+	WoodpeckerToRepositoryCron(*cron, &repoCronPlan)
 
-	diags = resp.State.Set(ctx, &repoCronState)
+	diags = resp.State.Set(ctx, &repoCronPlan)
 	resp.Diagnostics.Append(diags...)
 }
 

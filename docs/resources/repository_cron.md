@@ -32,7 +32,7 @@ Provides a repository resource. For more
 
 ## Import
 
-A repository can be imported using the `repo_owner`, `repo_name`, and `name` e.g.,
+A repository cron can be imported using the `repo_owner`, `repo_name`, and `name` e.g.,
 
 ```shell
 terraform import woodpecker_repository_cron.cron "example_owner/repository/test cron"
