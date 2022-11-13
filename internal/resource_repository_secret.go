@@ -179,10 +179,16 @@ func (r ResourceRepositorySecret) ModifyPlan(ctx context.Context, req resource.M
 
 	// Preknown attributes
 	plan.ID = state.ID
-	plan.RepoName = state.RepoName
-	plan.RepoOwner = state.RepoOwner
 
 	// Calculated / Configured
+
+	if plan.RepoName.IsUnknown() {
+		plan.RepoName = state.RepoName
+	}
+
+	if plan.RepoOwner.IsUnknown() {
+		plan.RepoOwner = state.RepoOwner
+	}
 
 	if plan.Name.IsUnknown() {
 		plan.Name = state.Name
