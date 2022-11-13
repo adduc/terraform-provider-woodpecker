@@ -157,7 +157,14 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 	repoOwner := resourceData.Owner.ValueString()
 	repoName := resourceData.Name.ValueString()
 
-	_, err := r.client.Repo(repoOwner, repoName)
+	_, err := r.client.RepoListOpts(true, false)
+
+	if err != nil {
+		resp.Diagnostics.AddError("Could not refresh list of repositories", err.Error())
+		return
+	}
+
+	_, err = r.client.Repo(repoOwner, repoName)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not fetch repository information", err.Error())
