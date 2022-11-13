@@ -35,11 +35,17 @@ func (r ResourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Type:        types.StringType,
 				Required:    true,
 				Description: "User or organization responsible for repository",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 			"name": {
 				Type:        types.StringType,
 				Required:    true,
 				Description: "Repository name",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.RequiresReplace(),
+				},
 			},
 
 			// Optional Attributes
@@ -158,6 +164,8 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 	repoName := resourceData.Name.ValueString()
 
 	_, err := r.client.RepoListOpts(true, false)
+
+	// TODO consider refreshing repository list only if repository does not exist
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not refresh list of repositories", err.Error())
