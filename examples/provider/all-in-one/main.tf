@@ -18,6 +18,13 @@ resource "woodpecker_repository_cron" "cron" {
   schedule   = "@weekly"
 }
 
+resource "woodpecker_repository_secret" "secret" {
+  repo_owner = woodpecker_repository.repo.owner
+  repo_name  = woodpecker_repository.repo.name
+  name       = "example secret"
+  value      = "example value"
+}
+
 ## Data Sources
 
 data "woodpecker_repository" "repo" {
@@ -29,6 +36,12 @@ data "woodpecker_repository_cron" "cron" {
   repo_owner = woodpecker_repository_cron.cron.repo_owner
   repo_name  = woodpecker_repository_cron.cron.repo_name
   name       = woodpecker_repository_cron.cron.name
+}
+
+data "woodpecker_repository_secret" "secret" {
+  repo_owner = woodpecker_repository_secret.secret.repo_owner
+  repo_name  = woodpecker_repository_secret.secret.repo_name
+  name       = woodpecker_repository_secret.secret.name
 }
 
 data "woodpecker_self" "self" {}
@@ -49,6 +62,10 @@ output "data_repository" {
 
 output "data_repository_cron" {
   value = data.woodpecker_repository_cron.cron
+}
+
+output "data_repository_secret" {
+  value = data.woodpecker_repository_secret.secret
 }
 
 output "data_self" {
