@@ -36,5 +36,5 @@ Provides a repository secret. For more
 A repository secret can be imported using the `repo_owner`, `repo_name`, and `name` e.g.,
 
 ```shell
-terraform import woodpecker_repository_secret.cron "example_owner/repository/test secret"
+terraform import woodpecker_repository_secret.secret "example_owner/repository/test secret"
 ```
