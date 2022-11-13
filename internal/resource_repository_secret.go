@@ -70,13 +70,13 @@ func (r ResourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Type:        types.BoolType,
 				Optional:    true,
 				Computed:    true,
-				Description: "Only available for plugins",
+				Description: "Whether secret is only available for plugins",
 			},
 			"images": {
 				Type:        types.SetType{ElemType: types.StringType},
 				Optional:    true,
 				Computed:    true,
-				Description: "Comma separated list of images where this secret is available, leave empty to allow all images",
+				Description: "List of images where this secret is available, leave empty to allow all images",
 			},
 			"events": {
 				Type:        types.SetType{ElemType: types.StringType},
