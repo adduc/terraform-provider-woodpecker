@@ -7,6 +7,5 @@ are welcome.
 
 ## Examples
 
-Check out <examples/provider/all-in-one/main.tf> for an example of
-each resource, or other files in the example folder for other
-typical scenarios.
+The [all-in-one example](examples/provider/all-in-one/main.tf) shows how
+each resource can be used.
