@@ -1,0 +1,1 @@
+data "woodpecker_self" "self" {}
