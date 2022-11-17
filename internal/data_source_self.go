@@ -85,12 +85,12 @@ func (r DataSourceSelf) Read(ctx context.Context, req datasource.ReadRequest, re
 	self := r.p.self
 
 	// unmarshall self response into resourceData
-	resourceData.ID = types.Int64{Value: self.ID}
-	resourceData.Login = types.String{Value: self.Login}
-	resourceData.Email = types.String{Value: self.Email}
-	resourceData.Avatar = types.String{Value: self.Avatar}
-	resourceData.Active = types.Bool{Value: self.Active}
-	resourceData.Admin = types.Bool{Value: self.Admin}
+	resourceData.ID = types.Int64Value(self.ID)
+	resourceData.Login = types.StringValue(self.Login)
+	resourceData.Email = types.StringValue(self.Email)
+	resourceData.Avatar = types.StringValue(self.Avatar)
+	resourceData.Active = types.BoolValue(self.Active)
+	resourceData.Admin = types.BoolValue(self.Admin)
 
 	diags := resp.State.Set(ctx, &resourceData)
 	resp.Diagnostics.Append(diags...)

@@ -136,8 +136,8 @@ func (r ResourceRepositoryCron) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	resourceData.RepoOwner = types.String{Value: repoOwner}
-	resourceData.RepoName = types.String{Value: repoName}
+	resourceData.RepoOwner = types.StringValue(repoOwner)
+	resourceData.RepoName = types.StringValue(repoName)
 	WoodpeckerToRepositoryCron(*cron, &resourceData)
 
 	diags = resp.State.Set(ctx, &resourceData)
@@ -303,8 +303,8 @@ func (r ResourceRepositoryCron) ImportState(ctx context.Context, req resource.Im
 	for _, wCron := range crons {
 		if wCron.Name == cronName {
 			WoodpeckerToRepositoryCron(*wCron, &cron)
-			cron.RepoOwner = types.String{Value: repoOwner}
-			cron.RepoName = types.String{Value: repoName}
+			cron.RepoOwner = types.StringValue(repoOwner)
+			cron.RepoName = types.StringValue(repoName)
 			diags := resp.State.Set(ctx, &cron)
 			resp.Diagnostics.Append(diags...)
 			return

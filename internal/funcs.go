@@ -9,21 +9,21 @@ import (
 )
 
 func WoodpeckerToRepository(wRepo woodpecker.Repo, repo *Repository) {
-	repo.ID = types.Int64{Value: wRepo.ID}
-	repo.Owner = types.String{Value: wRepo.Owner}
-	repo.Name = types.String{Value: wRepo.Name}
-	repo.FullName = types.String{Value: wRepo.FullName}
-	repo.Avatar = types.String{Value: wRepo.Avatar}
-	repo.Link = types.String{Value: wRepo.Link}
-	repo.Kind = types.String{Value: wRepo.Kind}
-	repo.Clone = types.String{Value: wRepo.Clone}
-	repo.Branch = types.String{Value: wRepo.Branch}
-	repo.Timeout = types.Int64{Value: wRepo.Timeout}
-	repo.Visibility = types.String{Value: wRepo.Visibility}
-	repo.IsTrusted = types.Bool{Value: wRepo.IsTrusted}
-	repo.IsGated = types.Bool{Value: wRepo.IsGated}
-	repo.AllowPull = types.Bool{Value: wRepo.AllowPull}
-	repo.Config = types.String{Value: wRepo.Config}
+	repo.ID = types.Int64Value(wRepo.ID)
+	repo.Owner = types.StringValue(wRepo.Owner)
+	repo.Name = types.StringValue(wRepo.Name)
+	repo.FullName = types.StringValue(wRepo.FullName)
+	repo.Avatar = types.StringValue(wRepo.Avatar)
+	repo.Link = types.StringValue(wRepo.Link)
+	repo.Kind = types.StringValue(wRepo.Kind)
+	repo.Clone = types.StringValue(wRepo.Clone)
+	repo.Branch = types.StringValue(wRepo.Branch)
+	repo.Timeout = types.Int64Value(wRepo.Timeout)
+	repo.Visibility = types.StringValue(wRepo.Visibility)
+	repo.IsTrusted = types.BoolValue(wRepo.IsTrusted)
+	repo.IsGated = types.BoolValue(wRepo.IsGated)
+	repo.AllowPull = types.BoolValue(wRepo.AllowPull)
+	repo.Config = types.StringValue(wRepo.Config)
 }
 
 func prepareRepositoryPatch(resourceData Repository) *woodpecker.RepoPatch {
@@ -63,14 +63,14 @@ func prepareRepositoryPatch(resourceData Repository) *woodpecker.RepoPatch {
 }
 
 func WoodpeckerToRepositoryCron(wCron woodpecker.Cron, cron *RepositoryCron) {
-	cron.ID = types.Int64{Value: wCron.ID}
-	cron.Name = types.String{Value: wCron.Name}
-	cron.RepoID = types.Int64{Value: wCron.RepoID}
-	cron.CreatorID = types.Int64{Value: wCron.CreatorID}
-	cron.NextExec = types.Int64{Value: wCron.NextExec}
-	cron.Schedule = types.String{Value: wCron.Schedule}
-	cron.Created = types.Int64{Value: wCron.Created}
-	cron.Branch = types.String{Value: wCron.Branch}
+	cron.ID = types.Int64Value(wCron.ID)
+	cron.Name = types.StringValue(wCron.Name)
+	cron.RepoID = types.Int64Value(wCron.RepoID)
+	cron.CreatorID = types.Int64Value(wCron.CreatorID)
+	cron.NextExec = types.Int64Value(wCron.NextExec)
+	cron.Schedule = types.StringValue(wCron.Schedule)
+	cron.Created = types.Int64Value(wCron.Created)
+	cron.Branch = types.StringValue(wCron.Branch)
 }
 
 func prepareRepositoryCronPatch(resourceData RepositoryCron) *woodpecker.Cron {
@@ -115,14 +115,14 @@ func WoodpeckerToRepositorySecret(ctx context.Context, wSecret woodpecker.Secret
 
 	var diags, err diag.Diagnostics
 
-	secret.ID = types.Int64{Value: wSecret.ID}
-	secret.Name = types.String{Value: wSecret.Name}
+	secret.ID = types.Int64Value(wSecret.ID)
+	secret.Name = types.StringValue(wSecret.Name)
 
 	if secret.Value.IsNull() || secret.Value.IsUnknown() {
-		secret.Value = types.String{Value: wSecret.Value}
+		secret.Value = types.StringValue(wSecret.Value)
 	}
 
-	secret.PluginsOnly = types.Bool{Value: wSecret.PluginsOnly}
+	secret.PluginsOnly = types.BoolValue(wSecret.PluginsOnly)
 	secret.Images, diags = types.SetValueFrom(ctx, types.StringType, wSecret.Images)
 	secret.Events, err = types.SetValueFrom(ctx, types.StringType, wSecret.Events)
 

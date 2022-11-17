@@ -24,6 +24,13 @@ provider "woodpecker" {
 
 ### Optional
 
-- `server` (String) Woodpecker CI server url
-- `token` (String) Woodpecker CI API token (can be found on /user as "Your Personal Token")
-- `verify` (Boolean) Whether to verify SSL certificates when interacting with Woodpecker CI
+- `server` (String) Woodpecker CI server url. It must be provided, but
+					can also be sourced from the WOODPECKER_TOKEN environment
+					variable.
+- `token` (String) Woodpecker CI API token (can be found on /user
+					as \"Your Personal Token\"). It must be provided, but
+					can also be sourced from the WOODPECKER_TOKEN environment
+					variable.
+- `verify` (Boolean) Whether to verify SSL certificates when 
+					interacting with Woodpecker CI. It can also be sourced
+					from the WOODPECKER_TOKEN environment variable.

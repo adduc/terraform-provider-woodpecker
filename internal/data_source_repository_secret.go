@@ -125,9 +125,9 @@ func (r DataSourceRepositorySecret) WoodpeckerToRepositorySecretData(ctx context
 
 	var diags, err diag.Diagnostics
 
-	secret.ID = types.Int64{Value: wSecret.ID}
-	secret.Name = types.String{Value: wSecret.Name}
-	secret.PluginsOnly = types.Bool{Value: wSecret.PluginsOnly}
+	secret.ID = types.Int64Value(wSecret.ID)
+	secret.Name = types.StringValue(wSecret.Name)
+	secret.PluginsOnly = types.BoolValue(wSecret.PluginsOnly)
 	secret.Images, diags = types.SetValueFrom(ctx, types.StringType, wSecret.Images)
 	secret.Events, err = types.SetValueFrom(ctx, types.StringType, wSecret.Events)
 

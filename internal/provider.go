@@ -33,19 +33,26 @@ func (p *woodpeckerProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Di
 		MarkdownDescription: "A Terraform provider for configuring the [Woodpecker CI](https://woodpecker-ci.org/) engine.",
 		Attributes: map[string]tfsdk.Attribute{
 			"server": {
-				Optional:    true,
-				Type:        types.StringType,
-				Description: "Woodpecker CI server url",
+				Optional: true,
+				Type:     types.StringType,
+				Description: `Woodpecker CI server url. It must be provided, but
+					can also be sourced from the WOODPECKER_TOKEN environment
+					variable.`,
 			},
 			"token": {
-				Optional:    true,
-				Type:        types.StringType,
-				Description: "Woodpecker CI API token (can be found on /user as \"Your Personal Token\")",
+				Optional: true,
+				Type:     types.StringType,
+				Description: `Woodpecker CI API token (can be found on /user
+					as \"Your Personal Token\"). It must be provided, but
+					can also be sourced from the WOODPECKER_TOKEN environment
+					variable.`,
 			},
 			"verify": {
-				Optional:    true,
-				Type:        types.BoolType,
-				Description: "Whether to verify SSL certificates when interacting with Woodpecker CI",
+				Optional: true,
+				Type:     types.BoolType,
+				Description: `Whether to verify SSL certificates when 
+					interacting with Woodpecker CI. It can also be sourced
+					from the WOODPECKER_TOKEN environment variable.`,
 			},
 		},
 	}, nil
@@ -101,15 +108,15 @@ func (p *woodpeckerProvider) createProviderConfiguration(
 	}
 
 	if config.Server.IsNull() {
-		config.Server = types.String{Value: os.Getenv("WOODPECKER_SERVER")}
+		config.Server = types.StringValue(os.Getenv("WOODPECKER_SERVER"))
 	}
 
 	if config.Token.IsNull() {
-		config.Token = types.String{Value: os.Getenv("WOODPECKER_TOKEN")}
+		config.Token = types.StringValue(os.Getenv("WOODPECKER_TOKEN"))
 	}
 
 	if config.Verify.IsNull() {
-		config.Verify = types.Bool{Value: os.Getenv("WOODPECKER_VERIFY") != "0"}
+		config.Verify = types.BoolValue(os.Getenv("WOODPECKER_VERIFY") != "0")
 	}
 
 	return config

@@ -144,8 +144,8 @@ func (r ResourceRepositorySecret) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	resourceData.RepoOwner = types.String{Value: repoOwner}
-	resourceData.RepoName = types.String{Value: repoName}
+	resourceData.RepoOwner = types.StringValue(repoOwner)
+	resourceData.RepoName = types.StringValue(repoName)
 	diags = WoodpeckerToRepositorySecret(ctx, *cron, &resourceData)
 
 	resp.Diagnostics.Append(diags...)
