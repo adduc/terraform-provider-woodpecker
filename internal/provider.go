@@ -30,18 +30,22 @@ func (p *woodpeckerProvider) Metadata(_ context.Context, req provider.MetadataRe
 
 func (p *woodpeckerProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		MarkdownDescription: "A Terraform provider for configuring the [Woodpecker CI](https://woodpecker-ci.org/) engine.",
 		Attributes: map[string]tfsdk.Attribute{
 			"server": {
-				Optional: true,
-				Type:     types.StringType,
+				Optional:    true,
+				Type:        types.StringType,
+				Description: "Woodpecker CI server url",
 			},
 			"token": {
-				Optional: true,
-				Type:     types.StringType,
+				Optional:    true,
+				Type:        types.StringType,
+				Description: "Woodpecker CI API token (can be found on /user as \"Your Personal Token\")",
 			},
 			"verify": {
-				Optional: true,
-				Type:     types.BoolType,
+				Optional:    true,
+				Type:        types.BoolType,
+				Description: "Whether to verify SSL certificates when interacting with Woodpecker CI",
 			},
 		},
 	}, nil

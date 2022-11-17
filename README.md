@@ -7,5 +7,5 @@ are welcome.
 
 ## Examples
 
-The [all-in-one example](examples/provider/all-in-one/main.tf) shows how
+The [all-in-one example](examples/all-in-one/main.tf) shows how
 each resource can be used.
