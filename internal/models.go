@@ -31,6 +31,14 @@ type Secret struct {
 	Events      types.Set    `tfsdk:"events"`
 }
 
+type SecretData struct {
+	ID          types.Int64  `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	PluginsOnly types.Bool   `tfsdk:"plugins_only"`
+	Images      types.Set    `tfsdk:"images"`
+	Events      types.Set    `tfsdk:"events"`
+}
+
 type User struct {
 	ID     types.Int64  `tfsdk:"id"`
 	Login  types.String `tfsdk:"login"`
