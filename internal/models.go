@@ -22,6 +22,15 @@ type Repository struct {
 	Config     types.String `tfsdk:"config"`
 }
 
+type Secret struct {
+	ID          types.Int64  `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	Value       types.String `tfsdk:"value"`
+	PluginsOnly types.Bool   `tfsdk:"plugins_only"`
+	Images      types.Set    `tfsdk:"images"`
+	Events      types.Set    `tfsdk:"events"`
+}
+
 type User struct {
 	ID     types.Int64  `tfsdk:"id"`
 	Login  types.String `tfsdk:"login"`

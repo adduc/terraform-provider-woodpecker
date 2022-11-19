@@ -164,3 +164,57 @@ func prepareRepositorySecretPatch(ctx context.Context, resourceData RepositorySe
 
 	return &patch, diags
 }
+
+func WoodpeckerToSecret(ctx context.Context, wSecret woodpecker.Secret, secret *Secret) diag.Diagnostics {
+
+	var diags, err diag.Diagnostics
+
+	secret.ID = types.Int64Value(wSecret.ID)
+	secret.Name = types.StringValue(wSecret.Name)
+
+	if secret.Value.IsNull() || secret.Value.IsUnknown() {
+		secret.Value = types.StringValue(wSecret.Value)
+	}
+
+	secret.PluginsOnly = types.BoolValue(wSecret.PluginsOnly)
+	secret.Images, diags = types.SetValueFrom(ctx, types.StringType, wSecret.Images)
+	secret.Events, err = types.SetValueFrom(ctx, types.StringType, wSecret.Events)
+
+	diags.Append(err...)
+
+	return diags
+}
+
+func prepareSecretPatch(ctx context.Context, resourceData Secret) (*woodpecker.Secret, diag.Diagnostics) {
+	patch := woodpecker.Secret{}
+
+	var diags, err diag.Diagnostics
+
+	if !resourceData.ID.IsNull() && !resourceData.ID.IsUnknown() {
+		patch.ID = resourceData.ID.ValueInt64()
+	}
+
+	if !resourceData.Name.IsNull() && !resourceData.Name.IsUnknown() {
+		patch.Name = resourceData.Name.ValueString()
+	}
+
+	if !resourceData.Value.IsNull() && !resourceData.Value.IsUnknown() {
+		patch.Value = resourceData.Value.ValueString()
+	}
+
+	if !resourceData.PluginsOnly.IsNull() && !resourceData.PluginsOnly.IsUnknown() {
+		patch.PluginsOnly = resourceData.PluginsOnly.ValueBool()
+	}
+
+	if !resourceData.Images.IsNull() && !resourceData.Images.IsUnknown() {
+		err = resourceData.Images.ElementsAs(ctx, &patch.Images, false)
+		diags.Append(err...)
+	}
+
+	if !resourceData.Events.IsNull() && !resourceData.Events.IsUnknown() {
+		err = resourceData.Events.ElementsAs(ctx, &patch.Events, false)
+		diags.Append(err...)
+	}
+
+	return &patch, diags
+}
