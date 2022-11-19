@@ -140,7 +140,7 @@ func (r ResourceRepositorySecret) Create(ctx context.Context, req resource.Creat
 	cron, err := r.client.SecretCreate(repoOwner, repoName, secret)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Could not create repository cron", err.Error())
+		resp.Diagnostics.AddError("Could not create repository secret", err.Error())
 		return
 	}
 
@@ -269,7 +269,7 @@ func (r ResourceRepositorySecret) Update(ctx context.Context, req resource.Updat
 	secret, err := r.client.SecretUpdate(repoOwner, repoName, secret)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Could not update repository cron", err.Error())
+		resp.Diagnostics.AddError("Could not update repository secret", err.Error())
 		return
 	}
 
@@ -294,7 +294,7 @@ func (r ResourceRepositorySecret) Delete(ctx context.Context, req resource.Delet
 	err := r.client.SecretDelete(repoOwner, repoName, secretName)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Error deleting repository", err.Error())
+		resp.Diagnostics.AddError("Error deleting repository secret", err.Error())
 		return
 	}
 
