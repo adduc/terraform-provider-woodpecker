@@ -6,7 +6,7 @@ are welcome.
 
 ## Changelog
 
-The changelog can be found in [CHANGELOG.md](CHANGELOG.md), or in the notes for each [release](releases).
+The changelog can be found in [CHANGELOG.md](CHANGELOG.md), or in the notes for each [release](../../releases).
 
 ## Examples
 
