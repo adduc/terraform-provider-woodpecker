@@ -277,7 +277,7 @@ func (r ResourceRepositoryCron) Delete(ctx context.Context, req resource.DeleteR
 
 func (r ResourceRepositoryCron) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// Need repo owner, repo name, and cron name?
-	idParts := strings.Split(req.ID, "/")
+	idParts := strings.SplitN(req.ID, "/", 3)
 
 	if len(idParts) != 3 || idParts[0] == "" || idParts[1] == "" || idParts[2] == "" {
 		resp.Diagnostics.AddError(
