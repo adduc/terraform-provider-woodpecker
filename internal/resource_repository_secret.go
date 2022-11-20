@@ -158,11 +158,6 @@ func (r ResourceRepositorySecret) Create(ctx context.Context, req resource.Creat
 }
 
 func (r ResourceRepositorySecret) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if req.State.Raw.IsNull() {
-		// if we're creating the resource, no need to delete and recreate it
-		return
-	}
-
 	if req.Plan.Raw.IsNull() {
 		// if we're deleting the resource, no need to delete and recreate it
 		return
@@ -171,6 +166,23 @@ func (r ResourceRepositorySecret) ModifyPlan(ctx context.Context, req resource.M
 	var plan, state RepositorySecret
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if strings.Contains(plan.Name.ValueString(), "/") {
+		resp.Diagnostics.AddError(
+			"Unexpected character",
+			"`/` is not supported in repository secret name",
+		)
+		return
+	}
+
+	if req.State.Raw.IsNull() {
+		// if we're creating the resource, no need to delete and recreate it
+		return
+	}
+
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
