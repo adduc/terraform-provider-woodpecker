@@ -5,7 +5,6 @@ package internal
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -15,41 +14,25 @@ import (
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
 
-func NewRepositorySecretResource() resource.Resource {
-	return &ResourceRepositorySecret{}
+func NewSecretResource() resource.Resource {
+	return &ResourceSecret{}
 }
 
-type ResourceRepositorySecret struct {
+type ResourceSecret struct {
 	client woodpecker.Client
 }
 
-func (r ResourceRepositorySecret) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_repository_secret"
+func (r ResourceSecret) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_secret"
 }
 
-func (r ResourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r ResourceSecret) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
-		MarkdownDescription: `Provides a repository secret. For more 
-		information see [Woodpecker CI's documentation](https://woodpecker-ci.org/docs/usage/secrets)`,
+		MarkdownDescription: `Provides a global secret. For more 
+		information see [Woodpecker CI's documentation](https://woodpecker-ci.org/docs/usage/secrets).`,
 
 		Attributes: map[string]tfsdk.Attribute{
 			// Required Attributes
-			"repo_owner": {
-				Type:        types.StringType,
-				Required:    true,
-				Description: "User or organization responsible for repository",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.RequiresReplace(),
-				},
-			},
-			"repo_name": {
-				Type:        types.StringType,
-				Required:    true,
-				Description: "Repository name",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.RequiresReplace(),
-				},
-			},
 			"name": {
 				Type:        types.StringType,
 				Required:    true,
@@ -98,7 +81,7 @@ func (r ResourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, di
 	}, nil
 }
 
-func (r *ResourceRepositorySecret) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *ResourceSecret) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -118,35 +101,30 @@ func (r *ResourceRepositorySecret) Configure(_ context.Context, req resource.Con
 	r.client = p.client
 }
 
-func (r ResourceRepositorySecret) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r ResourceSecret) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// unmarshall request config into resourceData
-	var resourceData RepositorySecret
+	var resourceData Secret
 	diags := req.Config.Get(ctx, &resourceData)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	repoOwner := resourceData.RepoOwner.ValueString()
-	repoName := resourceData.RepoName.ValueString()
-
-	secret, diags := prepareRepositorySecretPatch(ctx, resourceData)
+	secret, diags := prepareSecretPatch(ctx, resourceData)
 
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	cron, err := r.client.SecretCreate(repoOwner, repoName, secret)
+	cron, err := r.client.GlobalSecretCreate(secret)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not create repository secret", err.Error())
 		return
 	}
 
-	resourceData.RepoOwner = types.StringValue(repoOwner)
-	resourceData.RepoName = types.StringValue(repoName)
-	diags = WoodpeckerToRepositorySecret(ctx, *cron, &resourceData)
+	diags = WoodpeckerToSecret(ctx, *cron, &resourceData)
 
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -157,7 +135,7 @@ func (r ResourceRepositorySecret) Create(ctx context.Context, req resource.Creat
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r ResourceRepositorySecret) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+func (r ResourceSecret) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if req.State.Raw.IsNull() {
 		// if we're creating the resource, no need to delete and recreate it
 		return
@@ -168,7 +146,7 @@ func (r ResourceRepositorySecret) ModifyPlan(ctx context.Context, req resource.M
 		return
 	}
 
-	var plan, state RepositorySecret
+	var plan, state Secret
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	diags = req.State.Get(ctx, &state)
@@ -181,14 +159,6 @@ func (r ResourceRepositorySecret) ModifyPlan(ctx context.Context, req resource.M
 	plan.ID = state.ID
 
 	// Calculated / Configured
-
-	if plan.RepoName.IsUnknown() {
-		plan.RepoName = state.RepoName
-	}
-
-	if plan.RepoOwner.IsUnknown() {
-		plan.RepoOwner = state.RepoOwner
-	}
 
 	if plan.Name.IsUnknown() {
 		plan.Name = state.Name
@@ -214,87 +184,80 @@ func (r ResourceRepositorySecret) ModifyPlan(ctx context.Context, req resource.M
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r ResourceRepositorySecret) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r ResourceSecret) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// unmarshall request config into resourceData
-	var resourceData RepositorySecret
+	var resourceData Secret
 	diags := req.State.Get(ctx, &resourceData)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// fetch repo
-	repoOwner := resourceData.RepoOwner.ValueString()
-	repoName := resourceData.RepoName.ValueString()
+	// fetch secret
 	secretName := resourceData.Name.ValueString()
 
-	secret, err := r.client.Secret(repoOwner, repoName, secretName)
+	secret, err := r.client.GlobalSecret(secretName)
 
 	if err != nil {
 		resp.Diagnostics.AddError(err.Error(), "")
 		return
 	}
 
-	WoodpeckerToRepositorySecret(ctx, *secret, &resourceData)
+	WoodpeckerToSecret(ctx, *secret, &resourceData)
 
 	diags = resp.State.Set(ctx, &resourceData)
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r ResourceRepositorySecret) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var repoSecretPlan RepositorySecret
+func (r ResourceSecret) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var repoSecretPlan Secret
 	diags := req.Plan.Get(ctx, &repoSecretPlan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	var repoSecretState RepositorySecret
+	var repoSecretState Secret
 	diags = req.State.Get(ctx, &repoSecretState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	repoOwner := repoSecretState.RepoOwner.ValueString()
-	repoName := repoSecretState.RepoName.ValueString()
-
-	secret, diags := prepareRepositorySecretPatch(ctx, repoSecretPlan)
+	secret, diags := prepareSecretPatch(ctx, repoSecretPlan)
 
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	secret, err := r.client.SecretUpdate(repoOwner, repoName, secret)
+	secret, err := r.client.GlobalSecretUpdate(secret)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Could not update repository secret", err.Error())
+		resp.Diagnostics.AddError("Could not update repository cron", err.Error())
 		return
 	}
 
-	WoodpeckerToRepositorySecret(ctx, *secret, &repoSecretPlan)
+	WoodpeckerToSecret(ctx, *secret, &repoSecretPlan)
 
 	diags = resp.State.Set(ctx, &repoSecretPlan)
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r ResourceRepositorySecret) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var repoState RepositorySecret
+func (r ResourceSecret) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var repoState Secret
 	diags := req.State.Get(ctx, &repoState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	repoOwner := repoState.RepoOwner.ValueString()
-	repoName := repoState.RepoName.ValueString()
 	secretName := repoState.Name.ValueString()
 
-	err := r.client.SecretDelete(repoOwner, repoName, secretName)
+	err := r.client.GlobalSecretDelete(secretName)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Error deleting repository secret", err.Error())
+		resp.Diagnostics.AddError("Error deleting repository", err.Error())
 		return
 	}
 
@@ -302,18 +265,6 @@ func (r ResourceRepositorySecret) Delete(ctx context.Context, req resource.Delet
 	resp.State.RemoveResource(ctx)
 }
 
-func (r ResourceRepositorySecret) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	idParts := strings.Split(req.ID, "/")
-
-	if len(idParts) != 3 || idParts[0] == "" || idParts[1] == "" || idParts[2] == "" {
-		resp.Diagnostics.AddError(
-			"Unexpected Import Identifier",
-			fmt.Sprintf("Expected format: repo_owner/repo_name/secret_name. Got: %s", req.ID),
-		)
-		return
-	}
-
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("repo_owner"), idParts[0])...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("repo_name"), idParts[1])...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), idParts[2])...)
+func (r ResourceSecret) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), req.ID)...)
 }
