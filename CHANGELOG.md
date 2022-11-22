@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added resource `woodpecker_user`
+- Added data-source `woodpecker_user`
+
 ### Changed
 
 - secret: an error is now triggered when attempting to create a secret

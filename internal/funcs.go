@@ -218,3 +218,44 @@ func prepareSecretPatch(ctx context.Context, resourceData Secret) (*woodpecker.S
 
 	return &patch, diags
 }
+
+func WoodpeckerToUser(ctx context.Context, wUser woodpecker.User, user *User) {
+	user.ID = types.Int64Value(wUser.ID)
+	user.Login = types.StringValue(wUser.Login)
+	user.Email = types.StringValue(wUser.Email)
+	user.Avatar = types.StringValue(wUser.Avatar)
+	user.Active = types.BoolValue(wUser.Active)
+	user.Admin = types.BoolValue(wUser.Admin)
+}
+
+func prepareUserPatch(ctx context.Context, resourceData User) (*woodpecker.User, diag.Diagnostics) {
+	patch := woodpecker.User{}
+
+	var diags diag.Diagnostics
+
+	if !resourceData.ID.IsNull() && !resourceData.ID.IsUnknown() {
+		patch.ID = resourceData.ID.ValueInt64()
+	}
+
+	if !resourceData.Login.IsNull() && !resourceData.Login.IsUnknown() {
+		patch.Login = resourceData.Login.ValueString()
+	}
+
+	if !resourceData.Email.IsNull() && !resourceData.Email.IsUnknown() {
+		patch.Email = resourceData.Email.ValueString()
+	}
+
+	if !resourceData.Avatar.IsNull() && !resourceData.Avatar.IsUnknown() {
+		patch.Avatar = resourceData.Avatar.ValueString()
+	}
+
+	if !resourceData.Active.IsNull() && !resourceData.Active.IsUnknown() {
+		patch.Active = resourceData.Active.ValueBool()
+	}
+
+	if !resourceData.Admin.IsNull() && !resourceData.Admin.IsUnknown() {
+		patch.Admin = resourceData.Admin.ValueBool()
+	}
+
+	return &patch, diags
+}

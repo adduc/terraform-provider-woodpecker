@@ -65,6 +65,7 @@ func (p *woodpeckerProvider) DataSources(_ context.Context) []func() datasource.
 		NewDataSourceRepositorySecret,
 		NewDataSourceSecret,
 		NewDataSourceSelf,
+		NewDataSourceUser,
 	}
 }
 
@@ -74,6 +75,7 @@ func (p *woodpeckerProvider) Resources(_ context.Context) []func() resource.Reso
 		NewRepositoryCronResource,
 		NewRepositorySecretResource,
 		NewSecretResource,
+		NewUserResource,
 	}
 }
 
