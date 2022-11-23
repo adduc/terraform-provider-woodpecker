@@ -4,6 +4,25 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+type OrganizationSecret struct {
+	Owner       types.String `tfsdk:"owner"`
+	ID          types.Int64  `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	Value       types.String `tfsdk:"value"`
+	PluginsOnly types.Bool   `tfsdk:"plugins_only"`
+	Images      types.Set    `tfsdk:"images"`
+	Events      types.Set    `tfsdk:"events"`
+}
+
+type OrganizationSecretData struct {
+	Owner       types.String `tfsdk:"owner"`
+	ID          types.Int64  `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	PluginsOnly types.Bool   `tfsdk:"plugins_only"`
+	Images      types.Set    `tfsdk:"images"`
+	Events      types.Set    `tfsdk:"events"`
+}
+
 type Repository struct {
 	ID         types.Int64  `tfsdk:"id"`
 	Owner      types.String `tfsdk:"owner"`

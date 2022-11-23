@@ -123,7 +123,7 @@ func (r DataSourceRepositoryCron) Read(ctx context.Context, req datasource.ReadR
 	cron, err := r.client.CronGet(repoOwner, repoName, cronId)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Error retrieving cron", err.Error())
+		resp.Diagnostics.AddError("Error retrieving repository cron", err.Error())
 		return
 	}
 

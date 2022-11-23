@@ -60,6 +60,7 @@ func (p *woodpeckerProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Di
 
 func (p *woodpeckerProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewDataSourceOrganizationSecret,
 		NewDataSourceRepository,
 		NewDataSourceRepositoryCron,
 		NewDataSourceRepositorySecret,
@@ -71,6 +72,7 @@ func (p *woodpeckerProvider) DataSources(_ context.Context) []func() datasource.
 
 func (p *woodpeckerProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewOrganizationSecretResource,
 		NewRepositoryResource,
 		NewRepositoryCronResource,
 		NewRepositorySecretResource,

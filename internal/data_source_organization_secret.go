@@ -11,33 +11,28 @@ import (
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
 
-func NewDataSourceRepositorySecret() datasource.DataSource {
-	return &DataSourceRepositorySecret{}
+func NewDataSourceOrganizationSecret() datasource.DataSource {
+	return &DataSourceOrganizationSecret{}
 }
 
-type DataSourceRepositorySecret struct {
+type DataSourceOrganizationSecret struct {
 	client woodpecker.Client
 }
 
-func (d *DataSourceRepositorySecret) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_repository_secret"
+func (d *DataSourceOrganizationSecret) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_organization_secret"
 }
 
-func (r DataSourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r DataSourceOrganizationSecret) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		MarkdownDescription: "Use this data source to get information on an existing secret for a repository",
 
 		Attributes: map[string]tfsdk.Attribute{
 			// Required Attributes
-			"repo_owner": {
+			"owner": {
 				Type:        types.StringType,
 				Required:    true,
-				Description: "User or organization responsible for repository",
-			},
-			"repo_name": {
-				Type:        types.StringType,
-				Required:    true,
-				Description: "Repository name",
+				Description: "Organization name",
 			},
 			"name": {
 				Type:        types.StringType,
@@ -70,7 +65,7 @@ func (r DataSourceRepositorySecret) GetSchema(_ context.Context) (tfsdk.Schema, 
 	}, nil
 }
 
-func (r *DataSourceRepositorySecret) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (r *DataSourceOrganizationSecret) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -90,9 +85,9 @@ func (r *DataSourceRepositorySecret) Configure(_ context.Context, req datasource
 	r.client = p.client
 }
 
-func (r DataSourceRepositorySecret) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (r DataSourceOrganizationSecret) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// unmarshall request config into resourceData
-	var resourceData RepositorySecretData
+	var resourceData OrganizationSecretData
 	diags := req.Config.Get(ctx, &resourceData)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -100,18 +95,17 @@ func (r DataSourceRepositorySecret) Read(ctx context.Context, req datasource.Rea
 	}
 
 	// fetch repo
-	repoOwner := resourceData.RepoOwner.ValueString()
-	repoName := resourceData.RepoName.ValueString()
+	owner := resourceData.Owner.ValueString()
 	secretName := resourceData.Name.ValueString()
 
-	secret, err := r.client.Secret(repoOwner, repoName, secretName)
+	secret, err := r.client.OrgSecret(owner, secretName)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Error retrieving repository secret", err.Error())
+		resp.Diagnostics.AddError("Error retrieving organization secret", err.Error())
 		return
 	}
 
-	diags = r.WoodpeckerToRepositorySecretData(ctx, *secret, &resourceData)
+	diags = r.WoodpeckerToOrganizationSecretData(ctx, *secret, &resourceData)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -121,7 +115,7 @@ func (r DataSourceRepositorySecret) Read(ctx context.Context, req datasource.Rea
 	resp.Diagnostics.Append(diags...)
 }
 
-func (r DataSourceRepositorySecret) WoodpeckerToRepositorySecretData(ctx context.Context, wSecret woodpecker.Secret, secret *RepositorySecretData) diag.Diagnostics {
+func (r DataSourceOrganizationSecret) WoodpeckerToOrganizationSecretData(ctx context.Context, wSecret woodpecker.Secret, secret *OrganizationSecretData) diag.Diagnostics {
 
 	var diags, err diag.Diagnostics
 

@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added resource `woodpecker_organization_secret`
+- Added data-source `woodpecker_organization_secret`
 - Added resource `woodpecker_user`
 - Added data-source `woodpecker_user`
 
