@@ -4,10 +4,13 @@
 
 ### Added
 
+- Added resource `woodpecker_repository_registry`
+- Added data-source `woodpecker_repository_registry`
 - Added resource `woodpecker_organization_secret`
 - Added data-source `woodpecker_organization_secret`
 - Added resource `woodpecker_user`
 - Added data-source `woodpecker_user`
+
 
 ### Changed
 
