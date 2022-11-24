@@ -128,7 +128,7 @@ func (r ResourceOrganizationSecret) Create(ctx context.Context, req resource.Cre
 		return
 	}
 
-	cron, err := r.client.OrgSecretCreate(owner, secret)
+	secret, err := r.client.OrgSecretCreate(owner, secret)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not create organization secret", err.Error())
@@ -136,7 +136,7 @@ func (r ResourceOrganizationSecret) Create(ctx context.Context, req resource.Cre
 	}
 
 	resourceData.Owner = types.StringValue(owner)
-	diags = WoodpeckerToOrganizationSecret(ctx, *cron, &resourceData)
+	diags = WoodpeckerToOrganizationSecret(ctx, *secret, &resourceData)
 
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
