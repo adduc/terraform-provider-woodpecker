@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## v0.3.0 - 2022-11-24
 
 ### Added
 
@@ -10,7 +10,6 @@
 - Added data-source `woodpecker_organization_secret`
 - Added resource `woodpecker_user`
 - Added data-source `woodpecker_user`
-
 
 ### Changed
 
