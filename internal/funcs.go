@@ -313,3 +313,52 @@ func prepareOrganizationSecretPatch(ctx context.Context, resourceData Organizati
 
 	return &patch, diags
 }
+
+func WoodpeckerToRepositoryRegistry(ctx context.Context, wRegistry woodpecker.Registry, registry *RepositoryRegistry) diag.Diagnostics {
+
+	var diags diag.Diagnostics
+
+	registry.ID = types.Int64Value(wRegistry.ID)
+	registry.Address = types.StringValue(wRegistry.Address)
+	registry.Username = types.StringValue(wRegistry.Username)
+	registry.Token = types.StringValue(wRegistry.Token)
+	registry.Email = types.StringValue(wRegistry.Email)
+
+	if registry.Password.IsNull() || registry.Password.IsUnknown() {
+		registry.Password = types.StringValue(wRegistry.Password)
+	}
+
+	return diags
+}
+
+func prepareRepositoryRegistryPatch(ctx context.Context, resourceData RepositoryRegistry) (*woodpecker.Registry, diag.Diagnostics) {
+	patch := woodpecker.Registry{}
+
+	var diags diag.Diagnostics
+
+	if !resourceData.ID.IsNull() && !resourceData.ID.IsUnknown() {
+		patch.ID = resourceData.ID.ValueInt64()
+	}
+
+	if !resourceData.Address.IsNull() && !resourceData.Address.IsUnknown() {
+		patch.Address = resourceData.Address.ValueString()
+	}
+
+	if !resourceData.Username.IsNull() && !resourceData.Username.IsUnknown() {
+		patch.Username = resourceData.Username.ValueString()
+	}
+
+	if !resourceData.Password.IsNull() && !resourceData.Password.IsUnknown() {
+		patch.Password = resourceData.Password.ValueString()
+	}
+
+	if !resourceData.Token.IsNull() && !resourceData.Token.IsUnknown() {
+		patch.Token = resourceData.Token.ValueString()
+	}
+
+	if !resourceData.Email.IsNull() && !resourceData.Email.IsUnknown() {
+		patch.Email = resourceData.Email.ValueString()
+	}
+
+	return &patch, diags
+}

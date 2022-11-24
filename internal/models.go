@@ -100,3 +100,24 @@ type RepositorySecretData struct {
 	Images      types.Set    `tfsdk:"images"`
 	Events      types.Set    `tfsdk:"events"`
 }
+
+type RepositoryRegistry struct {
+	RepoOwner types.String `tfsdk:"repo_owner"`
+	RepoName  types.String `tfsdk:"repo_name"`
+	ID        types.Int64  `tfsdk:"id"`
+	Address   types.String `tfsdk:"address"`
+	Username  types.String `tfsdk:"username"`
+	Password  types.String `tfsdk:"password"`
+	Token     types.String `tfsdk:"token"`
+	Email     types.String `tfsdk:"email"`
+}
+
+type RepositoryRegistryData struct {
+	RepoOwner types.String `tfsdk:"repo_owner"`
+	RepoName  types.String `tfsdk:"repo_name"`
+	ID        types.Int64  `tfsdk:"id"`
+	Address   types.String `tfsdk:"address"`
+	Username  types.String `tfsdk:"username"`
+	Token     types.String `tfsdk:"token"`
+	Email     types.String `tfsdk:"email"`
+}
