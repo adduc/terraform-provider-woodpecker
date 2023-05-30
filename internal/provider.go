@@ -14,10 +14,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func New() provider.Provider {
-	return &woodpeckerProvider{}
-}
-
 type woodpeckerProvider struct {
 	config providerConfig
 	client woodpecker.Client
@@ -152,4 +148,8 @@ func (p *woodpeckerProvider) createClient(
 	}
 
 	return client, self
+}
+
+func New() provider.Provider {
+	return &woodpeckerProvider{}
 }

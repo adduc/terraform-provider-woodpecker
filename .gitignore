@@ -1,5 +1,6 @@
 artifacts/
-demo/.terraform.lock.hcl
-demo/.terraform
-demo/terraform.tfstate
-demo/terraform.tfstate.backup
+
+# test artifacts
+.ci/dummy-repo/
+.ci/cookie-jar.txt
+.ci/.env

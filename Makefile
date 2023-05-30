@@ -9,21 +9,24 @@ DIR=terraform.local/${NAMESPACE}/${NAME}/${VERSION}/$(OS)_$(ARCH)
 build:
 	go build -o artifacts/$(BINARY)
 
+# install the plugin locally
+# @todo deprecate in favor of using provider_installation.dev_overrides
 install: build
 	mkdir -p ~/.terraform.d/plugins/$(DIR)
 	cp artifacts/$(BINARY) ~/.terraform.d/plugins/$(DIR)
 
+# generate docs
 doc:
 	tfplugindocs
 
-test-reset: install
-	cd demo && rm -rf terraform.tfstate \
+# reset test environment
+reset:
+	.ci/reset.sh
 
-test-plan: install
-	cd demo && terraform plan # apply -auto-approve
+# run unit tests
+test:
+	echo "@todo"
 
-test-apply: install
-	cd demo && terraform apply -auto-approve
-
-test-import: install
-	cd demo && terraform import woodpecker_repository.repository jlong/repo-3
+# run acceptance tests
+testacc:
+	bash -c 'set -a; source .ci/.env; env TF_ACC=1 go test -v ./...'

@@ -1,0 +1,29 @@
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:1.19.3-0
+    tmpfs: ["/data"]
+    stop_signal: SIGKILL
+    ports: [ "3000:3000", "8000:8000" ]
+    environment:
+      # @see https://docs.gitea.com/next/administration/config-cheat-sheet
+
+      GITEA__database__DB_TYPE: sqlite3
+      GITEA__security__INSTALL_LOCK: "true"
+
+      # Allow users to push local repositories to Gitea and have them
+      # automatically created for a user.
+      GITEA__repository__ENABLE_PUSH_CREATE_USER: "true"
+
+  woodpecker:
+    image: woodpeckerci/woodpecker-server:v0.15.9
+    tmpfs: ["/var/lib/woodpecker"]
+    network_mode: service:forgejo
+    stop_signal: SIGKILL
+    environment:
+      WOODPECKER_OPEN: "true"
+      WOODPECKER_HOST: "http://127.0.0.1:8000"
+      WOODPECKER_AGENT_SECRET: ${WOODPECKER_AGENT_SECRET}
+      WOODPECKER_GITEA: "true"
+      WOODPECKER_GITEA_URL: "http://127.0.0.1:3000"
+      WOODPECKER_GITEA_CLIENT: ${WOODPECKER_GITEA_CLIENT}
+      WOODPECKER_GITEA_SECRET: ${WOODPECKER_GITEA_SECRET}
