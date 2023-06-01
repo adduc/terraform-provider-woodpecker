@@ -7,6 +7,9 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - name: Test
-        run: make reset && make testacc
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Prepare Environment
+        run: make reset
+      - name: Run Tests
+        run: make testacc
