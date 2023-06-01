@@ -5,10 +5,9 @@ import (
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 	"golang.org/x/oauth2"
@@ -24,34 +23,31 @@ func (p *woodpeckerProvider) Metadata(_ context.Context, req provider.MetadataRe
 	resp.TypeName = "woodpecker"
 }
 
-func (p *woodpeckerProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (p *woodpeckerProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "A Terraform provider for configuring the [Woodpecker CI](https://woodpecker-ci.org/) engine.",
-		Attributes: map[string]tfsdk.Attribute{
-			"server": {
+		Attributes: map[string]schema.Attribute{
+			"server": schema.StringAttribute{
 				Optional: true,
-				Type:     types.StringType,
 				Description: `Woodpecker CI server url. It must be provided, but
 					can also be sourced from the WOODPECKER_TOKEN environment
 					variable.`,
 			},
-			"token": {
+			"token": schema.StringAttribute{
 				Optional: true,
-				Type:     types.StringType,
 				Description: `Woodpecker CI API token (can be found on /user
 					as \"Your Personal Token\"). It must be provided, but
 					can also be sourced from the WOODPECKER_TOKEN environment
 					variable.`,
 			},
-			"verify": {
+			"verify": schema.BoolAttribute{
 				Optional: true,
-				Type:     types.BoolType,
 				Description: `Whether to verify SSL certificates when 
 					interacting with Woodpecker CI. It can also be sourced
 					from the WOODPECKER_TOKEN environment variable.`,
 			},
 		},
-	}, nil
+	}
 }
 
 func (p *woodpeckerProvider) DataSources(_ context.Context) []func() datasource.DataSource {
