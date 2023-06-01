@@ -81,6 +81,10 @@ COOKIE_JAR=cookie-jar.txt
 # reset cookie jar
 rm -f ${COOKIE_JAR}
 
+_log "debugging woodpecker instance..."
+docker inspect ci-woodpecker-1
+docker logs ci-woodpecker-1
+
 _log "preparing csrf token for login..."
 CSRF_TOKEN=$(curl -s \
     "http://127.0.0.1:3000/user/login" \
