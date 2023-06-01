@@ -23,6 +23,9 @@ doc:
 reset:
 	.ci/reset.sh
 
+teardown:
+	.ci/teardown.sh
+
 # run unit tests
 test:
 	echo "@todo"
