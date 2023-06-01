@@ -94,14 +94,18 @@ curl -s http://127.0.0.1:3000/user/login \
   --data "_csrf=${CSRF_TOKEN}&user_name=test&password=test"
 
 _log "preparing csrf token for oauth2 authorize..."
-RESPONSE=$(curl -s \
-    "http://127.0.0.1:3000/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fauthorize&response_type=code&state=woodpecker")
-
-echo "RESPONSE: $RESPONSE"
-
-CSRF_TOKEN=$(echo "$RESPONSE" \
+curl -s \
+    "http://127.0.0.1:3000/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fauthorize&response_type=code&state=woodpecker" \
     --cookie ${COOKIE_JAR} --cookie-jar ${COOKIE_JAR} \
-    | grep -m1 _csrf | sed -r "s/.*value=\"(.*)\".*/\1/" \
+    > prepare.csrf.token.for.oauth2.authorize.log
+
+echo "::group::debug"
+cat prepare.csrf.token.for.oauth2.authorize.log
+echo "::endgroup::"
+
+CSRF_TOKEN=$(\
+  grep -m1 _csrf prepare.csrf.token.for.oauth2.authorize.log \
+  | sed -r "s/.*value=\"(.*)\".*/\1/" \
 )
 
 _log "authorizing forgejo access to woodpecker..."
