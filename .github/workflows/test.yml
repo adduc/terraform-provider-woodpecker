@@ -8,5 +8,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Test
-        run: |
-          echo "Hello, world!"
+        run:
+          - make reset
+          - make testacc
