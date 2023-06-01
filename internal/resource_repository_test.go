@@ -14,12 +14,22 @@ func TestAccResourceRepository_basic(t *testing.T) {
 
 			// Create and Read testing
 			{
-				Config: `
-				resource "woodpecker_repository" "test" {
-					owner = "test"
-					name = "test"
-				}
-				`,
+				Config: repositoryConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("woodpecker_repository.test", "owner", "test"),
+					resource.TestCheckResourceAttr("woodpecker_repository.test", "name", "test"),
+				),
+			},
+			// Import testing
+			{
+				ResourceName:      "woodpecker_repository.test",
+				ImportState:       true,
+				ImportStateId:     "test/test",
+				ImportStateVerify: true,
+			},
+			// Update/Read testing
+			{
+				Config: repositoryConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("woodpecker_repository.test", "owner", "test"),
 					resource.TestCheckResourceAttr("woodpecker_repository.test", "name", "test"),
@@ -28,3 +38,10 @@ func TestAccResourceRepository_basic(t *testing.T) {
 		},
 	})
 }
+
+var repositoryConfig = `
+resource "woodpecker_repository" "test" {
+	owner = "test"
+	name = "test"
+}
+`
