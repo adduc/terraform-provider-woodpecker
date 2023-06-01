@@ -8,6 +8,4 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Test
-        run:
-          - make reset
-          - make testacc
+        run: make reset && make testacc
