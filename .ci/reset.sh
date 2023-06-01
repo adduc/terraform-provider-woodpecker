@@ -40,6 +40,8 @@ cd dummy-repo
 git checkout -b main
 touch .woodpecker.yml
 git add .woodpecker.yml
+git config user.email "test@example.com"
+git config user.name "Test User"
 git commit -m "initial commit"
 git remote add origin http://test:test@127.0.0.1:3000/test/test.git
 git push origin main
