@@ -28,7 +28,7 @@ _log "waiting until forgejo has initialized its database..."
 while ! (docker compose logs forgejo | grep -q "ORM engine initialization successful!"); do sleep 0.2; done
 
 _log "provisioning test user in forgejo..."
-docker compose exec -u git forgejo gitea admin user create --username test --password test --email "test@localhost"
+docker compose exec -u git forgejo gitea admin user create --admin --username test --password test --email "test@localhost"
 
 _log "waiting until forgejo has started its web server..."
 while ! (docker compose logs forgejo | grep -q "Starting new Web server"); do sleep 0.2; done
@@ -47,6 +47,11 @@ git remote add origin http://test:test@127.0.0.1:3000/test/test.git
 git push origin main
 cd ..
 
+_log "creating organization in forgejo..."
+curl -s -X POST \
+    http://127.0.0.1:3000/api/v1/orgs \
+    --user test:test \
+    --json '{"username": "testorg"}'      
 
 _log "provisioning oauth2 app in forgejo for woodpecker..."
 OAUTH_APP=$(docker compose exec forgejo curl -s -X POST \

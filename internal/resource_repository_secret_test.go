@@ -25,10 +25,11 @@ func TestAccResourceRepositorySecret_basic(t *testing.T) {
 			},
 			// Import testing
 			{
-				ResourceName:      "woodpecker_repository.test",
-				ImportState:       true,
-				ImportStateId:     "test/test",
-				ImportStateVerify: true,
+				ResourceName:            "woodpecker_repository_secret.test",
+				ImportState:             true,
+				ImportStateId:           "test/test/test",
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"value"},
 			},
 			// Update/Read testing
 			{

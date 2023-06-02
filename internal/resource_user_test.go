@@ -41,5 +41,4 @@ var userConfig = `
 resource "woodpecker_user" "test2" {
 	login  = "test2"
 }
-  
 `
