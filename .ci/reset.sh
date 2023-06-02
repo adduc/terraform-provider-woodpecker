@@ -48,7 +48,7 @@ git push origin main
 cd ..
 
 _log "creating organization in forgejo..."
-curl -s -X POST \
+docker compose exec forgejo curl -s -X POST \
     http://127.0.0.1:3000/api/v1/orgs \
     --user test:test \
     --json '{"username": "testorg"}'      
