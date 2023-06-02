@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
@@ -23,52 +23,45 @@ func (d *DataSourceRepositoryRegistry) Metadata(_ context.Context, req datasourc
 	resp.TypeName = req.ProviderTypeName + "_repository_registry"
 }
 
-func (r DataSourceRepositoryRegistry) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r DataSourceRepositoryRegistry) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "Use this data source to get information on an existing registry for a repository",
 
-		Attributes: map[string]tfsdk.Attribute{
+		Attributes: map[string]schema.Attribute{
 			// Required Attributes
-			"repo_owner": {
-				Type:        types.StringType,
+			"repo_owner": schema.StringAttribute{
 				Required:    true,
 				Description: "User or organization responsible for repository",
 			},
-			"repo_name": {
-				Type:        types.StringType,
+			"repo_name": schema.StringAttribute{
 				Required:    true,
 				Description: "Repository name",
 			},
-			"address": {
-				Type:        types.StringType,
+			"address": schema.StringAttribute{
 				Required:    true,
 				Description: "Registry Address",
 			},
 
 			// Computed Attributes
-			"id": {
-				Type:        types.Int64Type,
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"username": {
-				Type:        types.StringType,
+			"username": schema.StringAttribute{
 				Computed:    true,
 				Description: "Registry Username",
 			},
-			"token": {
-				Type:        types.StringType,
+			"token": schema.StringAttribute{
 				Computed:    true,
 				Description: "Registry Token",
 				Sensitive:   true,
 			},
-			"email": {
-				Type:        types.StringType,
+			"email": schema.StringAttribute{
 				Computed:    true,
 				Description: "Registry Email",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *DataSourceRepositoryRegistry) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
