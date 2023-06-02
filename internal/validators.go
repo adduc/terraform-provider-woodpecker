@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -21,10 +22,10 @@ func (r ValidateSetInSlice) MarkdownDescription(ctx context.Context) string {
 	return r.Description(ctx)
 }
 
-func (r ValidateSetInSlice) Validate(ctx context.Context, req tfsdk.ValidateAttributeRequest, resp *tfsdk.ValidateAttributeResponse) {
+func (r ValidateSetInSlice) ValidateSet(ctx context.Context, req validator.SetRequest, resp *validator.SetResponse) {
 
 	var events types.Set
-	diags := tfsdk.ValueAs(ctx, req.AttributeConfig, &events)
+	diags := tfsdk.ValueAs(ctx, req.ConfigValue, &events)
 
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -52,7 +53,7 @@ func (r ValidateSetInSlice) Validate(ctx context.Context, req tfsdk.ValidateAttr
 	}
 }
 
-func (r ValidateSetInSlice) validateAttr(attr types.String, req tfsdk.ValidateAttributeRequest, resp *tfsdk.ValidateAttributeResponse) {
+func (r ValidateSetInSlice) validateAttr(attr types.String, req validator.SetRequest, resp *validator.SetResponse) {
 
 	str := attr.ValueString()
 
@@ -63,7 +64,7 @@ func (r ValidateSetInSlice) validateAttr(attr types.String, req tfsdk.ValidateAt
 	}
 
 	resp.Diagnostics.AddAttributeError(
-		req.AttributePath,
+		req.Path,
 		"Invalid Element",
 		fmt.Sprintf("%s is not supported (expected: %s)", attr, strings.Join(r.values, ", ")),
 	)

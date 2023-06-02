@@ -26,7 +26,6 @@ func (r ResourceRepository) Metadata(_ context.Context, req resource.MetadataReq
 }
 
 func (r ResourceRepository) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provides a repository resource.",
 
