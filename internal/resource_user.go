@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
 
@@ -24,53 +24,47 @@ func (r ResourceUser) Metadata(_ context.Context, req resource.MetadataRequest, 
 	resp.TypeName = req.ProviderTypeName + "_user"
 }
 
-func (r ResourceUser) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r ResourceUser) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provides a user resource.",
 
-		Attributes: map[string]tfsdk.Attribute{
+		Attributes: map[string]schema.Attribute{
 			// Required Attributes
-			"login": {
-				Type:        types.StringType,
+			"login": schema.StringAttribute{
 				Required:    true,
 				Description: "Username for user",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.RequiresReplace(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
 
 			// Optional Attributes
-			"email": {
-				Type:        types.StringType,
+			"email": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "Email address for user",
 			},
-			"active": {
-				Type:        types.BoolType,
+			"active": schema.BoolAttribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "Whether user is active in the system",
 			},
 
 			// Computed Attributes
-			"id": {
-				Type:        types.Int64Type,
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "User ID",
 			},
-			"admin": {
-				Type:        types.BoolType,
+			"admin": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Whether user is a Woodpecker admin",
 			},
-			"avatar": {
-				Type:        types.StringType,
+			"avatar": schema.StringAttribute{
 				Computed:    true,
 				Description: "Avatar URL for user",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *ResourceUser) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {

@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
@@ -24,75 +25,65 @@ func (r ResourceRepositoryCron) Metadata(_ context.Context, req resource.Metadat
 	resp.TypeName = req.ProviderTypeName + "_repository_cron"
 }
 
-func (r ResourceRepositoryCron) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r ResourceRepositoryCron) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: `Provides a repository resource. For more 
 		information see [Woodpecker CI's documentation](https://woodpecker-ci.org/docs/next/usage/cron)`,
 
-		Attributes: map[string]tfsdk.Attribute{
+		Attributes: map[string]schema.Attribute{
 			// Required Attributes
-			"repo_owner": {
-				Type:        types.StringType,
+			"repo_owner": schema.StringAttribute{
 				Required:    true,
 				Description: "User or organization responsible for repository",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.RequiresReplace(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"repo_name": {
-				Type:        types.StringType,
+			"repo_name": schema.StringAttribute{
 				Required:    true,
 				Description: "Repository name",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.RequiresReplace(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"name": {
-				Type:        types.StringType,
+			"name": schema.StringAttribute{
 				Required:    true,
 				Description: "Cron Name",
 			},
-			"schedule": {
-				Type:        types.StringType,
+			"schedule": schema.StringAttribute{
 				Required:    true,
 				Description: "Schedule (based on UTC)",
 			},
 
 			// Optional Attributes
-			"repo_id": {
-				Type:        types.Int64Type,
+			"repo_id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"creator_id": {
-				Type:        types.Int64Type,
+			"creator_id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"next_exec": {
-				Type:        types.Int64Type,
+			"next_exec": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"branch": {
-				Type:        types.StringType,
+			"branch": schema.StringAttribute{
 				Computed:    true,
 				Description: "",
 			},
 
 			// Computed
-			"id": {
-				Type:        types.Int64Type,
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"created": {
-				Type:        types.Int64Type,
+			"created": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *ResourceRepositoryCron) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
