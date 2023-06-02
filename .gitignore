@@ -4,3 +4,4 @@ artifacts/
 .ci/dummy-repo/
 .ci/cookie-jar.txt
 .ci/.env
+.ci/*.log

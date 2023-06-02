@@ -15,7 +15,8 @@ services:
       GITEA__repository__ENABLE_PUSH_CREATE_USER: "true"
 
   woodpecker:
-    image: woodpeckerci/woodpecker-server:v0.15.9
+    image: woodpeckerci/woodpecker-server:next-f91ee5d23a
+    # image: woodpeckerci/woodpecker-server:v0.15.9
     tmpfs: ["/var/lib/woodpecker"]
     network_mode: service:forgejo
     stop_signal: SIGKILL
@@ -27,3 +28,4 @@ services:
       WOODPECKER_GITEA_URL: "http://127.0.0.1:3000"
       WOODPECKER_GITEA_CLIENT: ${WOODPECKER_GITEA_CLIENT}
       WOODPECKER_GITEA_SECRET: ${WOODPECKER_GITEA_SECRET}
+      WOODPECKER_ADMIN: test
