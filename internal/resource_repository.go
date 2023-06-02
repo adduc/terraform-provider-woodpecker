@@ -149,19 +149,13 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 	repoOwner := resourceData.Owner.ValueString()
 	repoName := resourceData.Name.ValueString()
 
+	// This operation is needed for woodpecker <= 0.15 to refresh the
+	// list of known repositories. This is not needed for newer versions
+	// of woodpecker.
 	_, err := r.client.RepoListOpts(true, false)
-
-	// TODO consider refreshing repository list only if repository does not exist
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not refresh list of repositories", err.Error())
-		return
-	}
-
-	_, err = r.client.Repo(repoOwner, repoName)
-
-	if err != nil {
-		resp.Diagnostics.AddError("Could not fetch repository information", err.Error())
 		return
 	}
 
