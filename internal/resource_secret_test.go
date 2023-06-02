@@ -22,12 +22,11 @@ func TestAccResourceSecret_basic(t *testing.T) {
 			},
 			// Import testing
 			{
-				ResourceName:  "woodpecker_secret.test",
-				ImportState:   true,
-				ImportStateId: "test",
-				// since we don't have a way to read the secret value,
-				// we can't verify the import state
-				ImportStateVerify: false,
+				ResourceName:            "woodpecker_secret.test",
+				ImportState:             true,
+				ImportStateId:           "test",
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"value"},
 			},
 			// Update/Read testing
 			{
