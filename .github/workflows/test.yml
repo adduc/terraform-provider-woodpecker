@@ -15,7 +15,7 @@ jobs:
       - name: Setup Docker (with cache)
         uses: ScribeMD/docker-cache@0.3.3
         with:
-          key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('.ci/docker-compose.yml') }}
       - name: Prepare Environment
         run: make reset
       - name: Run Tests
