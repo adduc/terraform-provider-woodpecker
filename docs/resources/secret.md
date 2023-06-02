@@ -26,12 +26,12 @@ resource "woodpecker_secret" "secret" {
 
 ### Required
 
+- `events` (Set of String) One or more event types where secret is available (one of push, tag, pull_request, deployment, cron, manual)
 - `name` (String) Secret Name
 - `value` (String, Sensitive) Secret Value
 
 ### Optional
 
-- `events` (Set of String) One or more event types where secret is available (one of push, tag, pull_request, deployment, cron, manual)
 - `images` (Set of String) List of images where this secret is available, leave empty to allow all images
 - `plugins_only` (Boolean) Whether secret is only available for plugins
 
@@ -45,5 +45,5 @@ Import is supported using the following syntax:
 
 ```shell
 # Syntax: <name>
-terraform import woodpecker_repository_secret.secret "test secret"
+terraform import woodpecker_secret.secret "test secret"
 ```

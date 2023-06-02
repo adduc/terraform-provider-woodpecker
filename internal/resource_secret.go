@@ -48,6 +48,14 @@ func (r ResourceSecret) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnos
 				Description: "Secret Value",
 				Sensitive:   true,
 			},
+			"events": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Required:    true,
+				Description: "One or more event types where secret is available (one of push, tag, pull_request, deployment, cron, manual)",
+				Validators: []tfsdk.AttributeValidator{
+					&ValidateSetInSlice{values: []string{"push", "tag", "pull_request", "deployment", "cron", "manual"}},
+				},
+			},
 
 			// Optional Attributes
 			"plugins_only": {
@@ -61,15 +69,6 @@ func (r ResourceSecret) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnos
 				Optional:    true,
 				Computed:    true,
 				Description: "List of images where this secret is available, leave empty to allow all images",
-			},
-			"events": {
-				Type:        types.SetType{ElemType: types.StringType},
-				Optional:    true,
-				Computed:    true,
-				Description: "One or more event types where secret is available (one of push, tag, pull_request, deployment, cron, manual)",
-				Validators: []tfsdk.AttributeValidator{
-					&ValidateSetInSlice{values: []string{"push", "tag", "pull_request", "deployment", "cron", "manual"}},
-				},
 			},
 
 			// Computed
