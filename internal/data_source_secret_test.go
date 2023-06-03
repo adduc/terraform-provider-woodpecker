@@ -33,7 +33,7 @@ resource "woodpecker_secret" "test_secret" {
 }
 
 data "woodpecker_secret" "test_secret" {
-	name = "test_secret"
+	name = woodpecker_secret.test_secret.name
 	depends_on = [woodpecker_secret.test_secret]
 }
 `

@@ -31,8 +31,8 @@ resource "woodpecker_repository" "test_repo" {
 }
 
 data "woodpecker_repository" "test_repo" {
-	owner = "test_user"
-	name = "test_repo"
+	owner = woodpecker_repository.test_repo.owner
+	name = woodpecker_repository.test_repo.name
 	depends_on = [woodpecker_repository.test_repo]
 }
 `
