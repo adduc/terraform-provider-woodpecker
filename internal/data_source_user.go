@@ -5,9 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 )
 
 func NewDataSourceUser() datasource.DataSource {
@@ -22,47 +20,41 @@ func (d *DataSourceUser) Metadata(_ context.Context, req datasource.MetadataRequ
 	resp.TypeName = req.ProviderTypeName + "_user"
 }
 
-func (r DataSourceUser) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r DataSourceUser) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "Use this data source to get information on an existing user",
 
-		Attributes: map[string]tfsdk.Attribute{
+		Attributes: map[string]schema.Attribute{
 
 			// Required Attributes
-			"login": {
-				Type:        types.StringType,
+			"login": schema.StringAttribute{
 				Required:    true,
 				Description: "Username for user",
 			},
 
 			// Computed Attributes
-			"email": {
-				Type:        types.StringType,
+			"email": schema.StringAttribute{
 				Computed:    true,
 				Description: "Email address for user",
 			},
-			"active": {
-				Type:        types.BoolType,
+			"active": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Whether user is active in the system",
 			},
-			"id": {
-				Type:        types.Int64Type,
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "User ID",
 			},
-			"admin": {
-				Type:        types.BoolType,
+			"admin": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Whether user is a Woodpecker admin",
 			},
-			"avatar": {
-				Type:        types.StringType,
+			"avatar": schema.StringAttribute{
 				Computed:    true,
 				Description: "Avatar URL for user",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *DataSourceUser) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {

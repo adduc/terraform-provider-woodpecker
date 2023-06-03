@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -22,42 +21,36 @@ func (d *DataSourceSelf) Metadata(_ context.Context, req datasource.MetadataRequ
 	resp.TypeName = req.ProviderTypeName + "_self"
 }
 
-func (r DataSourceSelf) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r DataSourceSelf) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "Use this data source to get information on the authenticated user used by Terraform",
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
-				Type:        types.Int64Type,
+		Attributes: map[string]schema.Attribute{
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "User ID",
 			},
-			"login": {
-				Type:        types.StringType,
+			"login": schema.StringAttribute{
 				Computed:    true,
 				Description: "Username for user",
 			},
-			"email": {
-				Type:        types.StringType,
+			"email": schema.StringAttribute{
 				Computed:    true,
 				Description: "Email address for user",
 			},
-			"avatar": {
-				Type:        types.StringType,
+			"avatar": schema.StringAttribute{
 				Computed:    true,
 				Description: "Avatar URL for user",
 			},
-			"active": {
-				Type:        types.BoolType,
+			"active": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Whether user is active in the system",
 			},
-			"admin": {
-				Type:        types.BoolType,
+			"admin": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Whether user is a Woodpecker admin",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *DataSourceSelf) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {

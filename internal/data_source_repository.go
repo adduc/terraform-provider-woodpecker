@@ -5,9 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 )
 
 func NewDataSourceRepository() datasource.DataSource {
@@ -22,92 +20,77 @@ func (d *DataSourceRepository) Metadata(_ context.Context, req datasource.Metada
 	resp.TypeName = req.ProviderTypeName + "_repository"
 }
 
-func (r DataSourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r DataSourceRepository) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "Use this data source to get information on an existing repository",
 
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
-				Type:        types.Int64Type,
+		Attributes: map[string]schema.Attribute{
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "Repository ID",
 			},
-			"owner": {
-				Type:        types.StringType,
+			"owner": schema.StringAttribute{
 				Required:    true,
 				Description: "User or organization responsible for repository",
 			},
-			"name": {
-				Type:        types.StringType,
+			"name": schema.StringAttribute{
 				Required:    true,
 				Description: "Repository name",
 			},
-			"full_name": {
-				Type:        types.StringType,
+			"full_name": schema.StringAttribute{
 				Computed:    true,
 				Description: "*owner*/*name*",
 			},
-			"avatar": {
-				Type:        types.StringType,
+			"avatar": schema.StringAttribute{
 				Computed:    true,
 				Description: "Repository avatar URL",
 			},
-			"link": {
-				Type:        types.StringType,
+			"link": schema.StringAttribute{
 				Computed:    true,
 				Description: "Link to repository",
 			},
-			"kind": {
-				Type:        types.StringType,
+			"kind": schema.StringAttribute{
 				Computed:    true,
 				Description: "Kind of repository (e.g. git)",
 			},
-			"clone": {
-				Type:        types.StringType,
+			"clone": schema.StringAttribute{
 				Computed:    true,
 				Description: "URL to clone repository",
 			},
-			"branch": {
-				Type:        types.StringType,
+			"branch": schema.StringAttribute{
 				Computed:    true,
 				Description: "Default branch name",
 			},
-			"timeout": {
-				Type:     types.Int64Type,
+			"timeout": schema.Int64Attribute{
 				Computed: true,
 				Description: "After this timeout (in minutes) a pipeline has " +
 					"to finish or will be treated as timed out.",
 			},
-			"visibility": {
-				Type:        types.StringType,
+			"visibility": schema.StringAttribute{
 				Computed:    true,
 				Description: "Public, Private, or Internal",
 			},
-			"is_trusted": {
-				Type:     types.BoolType,
+			"is_trusted": schema.BoolAttribute{
 				Computed: true,
 				Description: "If true, underlying pipeline containers get " +
 					"access to escalated capabilities like mounting volumes.",
 			},
-			"is_gated": {
-				Type:        types.BoolType,
+			"is_gated": schema.BoolAttribute{
 				Computed:    true,
 				Description: "When true, every pipeline needs to be approved before being executed.",
 			},
-			"allow_pull": {
-				Type:        types.BoolType,
+			"allow_pull": schema.BoolAttribute{
 				Computed:    true,
 				Description: "If true, pipelines can run on pull requests.",
 			},
-			"config": {
-				Type:     types.StringType,
+			"config": schema.StringAttribute{
 				Computed: true,
 				MarkdownDescription: "Path to the pipeline config file or " +
 					"folder. When empty, defaults to `.woodpecker/*.yml` -> " +
 					"`.woodpecker.yml` -> `.drone.yml`.",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *DataSourceRepository) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {

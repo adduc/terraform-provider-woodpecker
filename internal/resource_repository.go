@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
 
@@ -25,64 +25,56 @@ func (r ResourceRepository) Metadata(_ context.Context, req resource.MetadataReq
 	resp.TypeName = req.ProviderTypeName + "_repository"
 }
 
-func (r ResourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r ResourceRepository) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provides a repository resource.",
 
-		Attributes: map[string]tfsdk.Attribute{
+		Attributes: map[string]schema.Attribute{
 			// Required Attributes
-			"owner": {
-				Type:        types.StringType,
+			"owner": schema.StringAttribute{
 				Required:    true,
 				Description: "User or organization responsible for repository",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.RequiresReplace(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"name": {
-				Type:        types.StringType,
+			"name": schema.StringAttribute{
 				Required:    true,
 				Description: "Repository name",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.RequiresReplace(),
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
 
 			// Optional Attributes
-			"timeout": {
-				Type:     types.Int64Type,
+			"timeout": schema.Int64Attribute{
 				Optional: true,
 				Computed: true,
 				Description: "After this timeout (in minutes) a pipeline has " +
 					"to finish or will be treated as timed out.",
 			},
-			"visibility": {
-				Type:        types.StringType,
+			"visibility": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "Public, Private, or Internal",
 			},
-			"is_trusted": {
-				Type:     types.BoolType,
+			"is_trusted": schema.BoolAttribute{
 				Optional: true,
 				Computed: true,
 				Description: "If true, underlying pipeline containers get " +
 					"access to escalated capabilities like mounting volumes.",
 			},
-			"is_gated": {
-				Type:        types.BoolType,
+			"is_gated": schema.BoolAttribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "When true, every pipeline needs to be approved before being executed.",
 			},
-			"allow_pull": {
-				Type:        types.BoolType,
+			"allow_pull": schema.BoolAttribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "If true, pipelines can run on pull requests.",
 			},
-			"config": {
-				Type:     types.StringType,
+			"config": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				MarkdownDescription: "Path to the pipeline config file or " +
@@ -91,43 +83,36 @@ func (r ResourceRepository) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 			},
 
 			// Computed Attributes
-			"id": {
-				Type:        types.Int64Type,
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "Repository ID",
 			},
-			"full_name": {
-				Type:        types.StringType,
+			"full_name": schema.StringAttribute{
 				Computed:    true,
 				Description: "*owner*/*name*",
 			},
-			"avatar": {
-				Type:        types.StringType,
+			"avatar": schema.StringAttribute{
 				Computed:    true,
 				Description: "Repository avatar URL",
 			},
-			"link": {
-				Type:        types.StringType,
+			"link": schema.StringAttribute{
 				Computed:    true,
 				Description: "Link to repository",
 			},
-			"kind": {
-				Type:        types.StringType,
+			"kind": schema.StringAttribute{
 				Computed:    true,
 				Description: "Kind of repository (e.g. git)",
 			},
-			"clone": {
-				Type:        types.StringType,
+			"clone": schema.StringAttribute{
 				Computed:    true,
 				Description: "URL to clone repository",
 			},
-			"branch": {
-				Type:        types.StringType,
+			"branch": schema.StringAttribute{
 				Computed:    true,
 				Description: "Default branch name",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *ResourceRepository) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
@@ -163,19 +148,13 @@ func (r ResourceRepository) Create(ctx context.Context, req resource.CreateReque
 	repoOwner := resourceData.Owner.ValueString()
 	repoName := resourceData.Name.ValueString()
 
+	// This operation is needed for woodpecker <= 0.15 to refresh the
+	// list of known repositories. This is not needed for newer versions
+	// of woodpecker.
 	_, err := r.client.RepoListOpts(true, false)
-
-	// TODO consider refreshing repository list only if repository does not exist
 
 	if err != nil {
 		resp.Diagnostics.AddError("Could not refresh list of repositories", err.Error())
-		return
-	}
-
-	_, err = r.client.Repo(repoOwner, repoName)
-
-	if err != nil {
-		resp.Diagnostics.AddError("Could not fetch repository information", err.Error())
 		return
 	}
 

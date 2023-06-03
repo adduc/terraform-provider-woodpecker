@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
@@ -23,41 +23,38 @@ func (d *DataSourceSecret) Metadata(_ context.Context, req datasource.MetadataRe
 	resp.TypeName = req.ProviderTypeName + "_secret"
 }
 
-func (r DataSourceSecret) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r DataSourceSecret) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "Use this data source to get information on an existing global secret",
 
-		Attributes: map[string]tfsdk.Attribute{
+		Attributes: map[string]schema.Attribute{
 			// Required Attributes
-			"name": {
-				Type:        types.StringType,
+			"name": schema.StringAttribute{
 				Required:    true,
 				Description: "Secret Name",
 			},
 
 			// Computed Attributes
-			"plugins_only": {
-				Type:        types.BoolType,
+			"plugins_only": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Whether secret is only available for plugins",
 			},
-			"images": {
-				Type:        types.SetType{ElemType: types.StringType},
+			"images": schema.SetAttribute{
+				ElementType: types.StringType,
 				Computed:    true,
 				Description: "List of images where this secret is available, leave empty to allow all images",
 			},
-			"events": {
-				Type:        types.SetType{ElemType: types.StringType},
+			"events": schema.SetAttribute{
+				ElementType: types.StringType,
 				Computed:    true,
 				Description: "One or more event types where secret is available (push, tag, pull_request, deployment, cron, manual)",
 			},
-			"id": {
-				Type:        types.Int64Type,
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *DataSourceSecret) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {

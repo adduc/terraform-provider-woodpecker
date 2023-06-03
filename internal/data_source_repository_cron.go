@@ -5,9 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/woodpecker-ci/woodpecker/woodpecker-go/woodpecker"
 )
 
@@ -23,67 +21,57 @@ func (d *DataSourceRepositoryCron) Metadata(_ context.Context, req datasource.Me
 	resp.TypeName = req.ProviderTypeName + "_repository_cron"
 }
 
-func (r DataSourceRepositoryCron) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r DataSourceRepositoryCron) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "Use this data source to get information on an existing cron for a repository",
 
-		Attributes: map[string]tfsdk.Attribute{
+		Attributes: map[string]schema.Attribute{
 
 			// Required Attributes
-			"repo_owner": {
-				Type:        types.StringType,
+			"repo_owner": schema.StringAttribute{
 				Required:    true,
 				Description: "User or organization responsible for repository",
 			},
-			"repo_name": {
-				Type:        types.StringType,
+			"repo_name": schema.StringAttribute{
 				Required:    true,
 				Description: "Repository name",
 			},
-			"name": {
-				Type:        types.StringType,
+			"name": schema.StringAttribute{
 				Required:    true,
 				Description: "Cron Name",
 			},
 
 			// Computed Attributes
-			"branch": {
-				Type:        types.StringType,
+			"branch": schema.StringAttribute{
 				Computed:    true,
 				Description: "",
 			},
-			"created": {
-				Type:        types.Int64Type,
+			"created": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"creator_id": {
-				Type:        types.Int64Type,
+			"creator_id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"id": {
-				Type:        types.Int64Type,
+			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"next_exec": {
-				Type:        types.Int64Type,
+			"next_exec": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"repo_id": {
-				Type:        types.Int64Type,
+			"repo_id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "",
 			},
-			"schedule": {
-				Type:        types.StringType,
+			"schedule": schema.StringAttribute{
 				Computed:    true,
 				Description: "Schedule (based on UTC)",
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *DataSourceRepositoryCron) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
