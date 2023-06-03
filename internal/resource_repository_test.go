@@ -7,6 +7,7 @@ import (
 )
 
 func TestAccResourceRepository_basic(t *testing.T) {
+	name := "woodpecker_repository.test_repo"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: NewProto6ProviderFactory(),
@@ -16,23 +17,23 @@ func TestAccResourceRepository_basic(t *testing.T) {
 			{
 				Config: repositoryConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_repository.test", "owner", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository.test", "name", "test"),
+					resource.TestCheckResourceAttr(name, "owner", "test_user"),
+					resource.TestCheckResourceAttr(name, "name", "test_repo"),
 				),
 			},
 			// Import testing
 			{
-				ResourceName:      "woodpecker_repository.test",
+				ResourceName:      name,
 				ImportState:       true,
-				ImportStateId:     "test/test",
+				ImportStateId:     "test_user/test_repo",
 				ImportStateVerify: true,
 			},
 			// Update/Read testing
 			{
 				Config: repositoryConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_repository.test", "owner", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository.test", "name", "test"),
+					resource.TestCheckResourceAttr(name, "owner", "test_user"),
+					resource.TestCheckResourceAttr(name, "name", "test_repo"),
 				),
 			},
 		},
@@ -40,8 +41,8 @@ func TestAccResourceRepository_basic(t *testing.T) {
 }
 
 var repositoryConfig = `
-resource "woodpecker_repository" "test" {
-	owner = "test"
-	name = "test"
+resource "woodpecker_repository" "test_repo" {
+	owner = "test_user"
+	name = "test_repo"
 }
 `

@@ -7,6 +7,7 @@ import (
 )
 
 func TestAccResourceRepositorySecret_basic(t *testing.T) {
+	name := "woodpecker_repository_secret.test_repo_secret"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: NewProto6ProviderFactory(),
@@ -16,18 +17,18 @@ func TestAccResourceRepositorySecret_basic(t *testing.T) {
 			{
 				Config: repositorySecretConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "repo_owner", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "repo_name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "events.#", "1"),
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "events.0", "push"),
+					resource.TestCheckResourceAttr(name, "repo_owner", "test_user"),
+					resource.TestCheckResourceAttr(name, "repo_name", "test_repo"),
+					resource.TestCheckResourceAttr(name, "name", "test_repo_secret"),
+					resource.TestCheckResourceAttr(name, "events.#", "1"),
+					resource.TestCheckResourceAttr(name, "events.0", "push"),
 				),
 			},
 			// Import testing
 			{
-				ResourceName:            "woodpecker_repository_secret.test",
+				ResourceName:            name,
 				ImportState:             true,
-				ImportStateId:           "test/test/test",
+				ImportStateId:           "test_user/test_repo/test_repo_secret",
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"value"},
 			},
@@ -35,11 +36,11 @@ func TestAccResourceRepositorySecret_basic(t *testing.T) {
 			{
 				Config: repositorySecretConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "repo_owner", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "repo_name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "events.#", "1"),
-					resource.TestCheckResourceAttr("woodpecker_repository_secret.test", "events.0", "push"),
+					resource.TestCheckResourceAttr(name, "repo_owner", "test_user"),
+					resource.TestCheckResourceAttr(name, "repo_name", "test_repo"),
+					resource.TestCheckResourceAttr(name, "name", "test_repo_secret"),
+					resource.TestCheckResourceAttr(name, "events.#", "1"),
+					resource.TestCheckResourceAttr(name, "events.0", "push"),
 				),
 			},
 		},
@@ -47,15 +48,15 @@ func TestAccResourceRepositorySecret_basic(t *testing.T) {
 }
 
 var repositorySecretConfig = `
-resource "woodpecker_repository" "test" {
-	owner = "test"
-	name  = "test"
+resource "woodpecker_repository" "test_repo" {
+	owner = "test_user"
+	name  = "test_repo"
 }
-resource "woodpecker_repository_secret" "test" {
-	repo_owner = woodpecker_repository.test.owner
-	repo_name  = woodpecker_repository.test.name
-	name       = "test"
-	value      = "test"
+resource "woodpecker_repository_secret" "test_repo_secret" {
+	repo_owner = woodpecker_repository.test_repo.owner
+	repo_name  = woodpecker_repository.test_repo.name
+	name       = "test_repo_secret"
+	value      = "test_value"
 	events     = ["push"]
 }
 `

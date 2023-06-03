@@ -7,6 +7,7 @@ import (
 )
 
 func TestAccResourceUser_basic(t *testing.T) {
+	name := "woodpecker_user.test_user_2"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: NewProto6ProviderFactory(),
@@ -16,21 +17,21 @@ func TestAccResourceUser_basic(t *testing.T) {
 			{
 				Config: userConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_user.test2", "login", "test2"),
+					resource.TestCheckResourceAttr(name, "login", "test_user_2"),
 				),
 			},
 			// Import testing
 			{
-				ResourceName:      "woodpecker_user.test2",
+				ResourceName:      name,
 				ImportState:       true,
-				ImportStateId:     "test2",
+				ImportStateId:     "test_user_2",
 				ImportStateVerify: true,
 			},
 			// Update/Read testing
 			{
 				Config: userConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_user.test2", "login", "test2"),
+					resource.TestCheckResourceAttr(name, "login", "test_user_2"),
 				),
 			},
 		},
@@ -38,7 +39,7 @@ func TestAccResourceUser_basic(t *testing.T) {
 }
 
 var userConfig = `
-resource "woodpecker_user" "test2" {
-	login  = "test2"
+resource "woodpecker_user" "test_user_2" {
+	login  = "test_user_2"
 }
 `

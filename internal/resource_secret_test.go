@@ -7,6 +7,7 @@ import (
 )
 
 func TestAccResourceSecret_basic(t *testing.T) {
+	name := "woodpecker_secret.test_secret"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: NewProto6ProviderFactory(),
@@ -16,15 +17,15 @@ func TestAccResourceSecret_basic(t *testing.T) {
 			{
 				Config: secretConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_secret.test", "name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_secret.test", "value", "test"),
+					resource.TestCheckResourceAttr(name, "name", "test_secret"),
+					resource.TestCheckResourceAttr(name, "value", "test_value"),
 				),
 			},
 			// Import testing
 			{
-				ResourceName:            "woodpecker_secret.test",
+				ResourceName:            name,
 				ImportState:             true,
-				ImportStateId:           "test",
+				ImportStateId:           "test_secret",
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"value"},
 			},
@@ -32,8 +33,8 @@ func TestAccResourceSecret_basic(t *testing.T) {
 			{
 				Config: secretConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_secret.test", "name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_secret.test", "value", "test"),
+					resource.TestCheckResourceAttr(name, "name", "test_secret"),
+					resource.TestCheckResourceAttr(name, "value", "test_value"),
 				),
 			},
 		},
@@ -41,10 +42,9 @@ func TestAccResourceSecret_basic(t *testing.T) {
 }
 
 var secretConfig = `
-resource "woodpecker_secret" "test" {
-	name  = "test"
-	value = "test"
+resource "woodpecker_secret" "test_secret" {
+	name  = "test_secret"
+	value = "test_value"
 	events = ["push"]
 }
-  
 `

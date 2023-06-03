@@ -7,6 +7,7 @@ import (
 )
 
 func TestAccResourceRepositoryCron_basic(t *testing.T) {
+	name := "woodpecker_repository_cron.test_repo_cron"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: NewProto6ProviderFactory(),
@@ -16,27 +17,27 @@ func TestAccResourceRepositoryCron_basic(t *testing.T) {
 			{
 				Config: repositoryCronConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_repository_cron.test", "repo_owner", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_cron.test", "repo_name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_cron.test", "name", "test_cron"),
-					resource.TestCheckResourceAttr("woodpecker_repository_cron.test", "schedule", "@daily"),
+					resource.TestCheckResourceAttr(name, "repo_owner", "test_user"),
+					resource.TestCheckResourceAttr(name, "repo_name", "test_repo"),
+					resource.TestCheckResourceAttr(name, "name", "test_cron"),
+					resource.TestCheckResourceAttr(name, "schedule", "@daily"),
 				),
 			},
 			// Import testing
 			{
-				ResourceName:      "woodpecker_repository_cron.test",
+				ResourceName:      name,
 				ImportState:       true,
-				ImportStateId:     "test/test/test_cron",
+				ImportStateId:     "test_user/test_repo/test_cron",
 				ImportStateVerify: true,
 			},
 			// Update/Read testing
 			{
 				Config: repositoryCronConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_repository_cron.test", "repo_owner", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_cron.test", "repo_name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_cron.test", "name", "test_cron"),
-					resource.TestCheckResourceAttr("woodpecker_repository_cron.test", "schedule", "@daily"),
+					resource.TestCheckResourceAttr(name, "repo_owner", "test_user"),
+					resource.TestCheckResourceAttr(name, "repo_name", "test_repo"),
+					resource.TestCheckResourceAttr(name, "name", "test_cron"),
+					resource.TestCheckResourceAttr(name, "schedule", "@daily"),
 				),
 			},
 		},
@@ -44,13 +45,13 @@ func TestAccResourceRepositoryCron_basic(t *testing.T) {
 }
 
 var repositoryCronConfig = `
-resource "woodpecker_repository" "test" {
-	owner = "test"
-	name  = "test"
+resource "woodpecker_repository" "test_repo" {
+	owner = "test_user"
+	name  = "test_repo"
 }
-resource "woodpecker_repository_cron" "test" {
-	repo_owner = woodpecker_repository.test.owner
-	repo_name  = woodpecker_repository.test.name
+resource "woodpecker_repository_cron" "test_repo_cron" {
+	repo_owner = woodpecker_repository.test_repo.owner
+	repo_name  = woodpecker_repository.test_repo.name
 	name    = "test_cron"
 	schedule = "@daily"
 }

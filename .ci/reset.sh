@@ -27,8 +27,8 @@ docker compose up -d forgejo
 _log "waiting until forgejo has initialized its database..."
 while ! (docker compose logs forgejo | grep -q "ORM engine initialization successful!"); do sleep 0.2; done
 
-_log "provisioning test user in forgejo..."
-docker compose exec -u git forgejo gitea admin user create --admin --username test --password test --email "test@localhost"
+_log "provisioning test_user user in forgejo..."
+docker compose exec -u git forgejo gitea admin user create --admin --username test_user --password test_pass --email "test@localhost"
 
 _log "waiting until forgejo has started its web server..."
 while ! (docker compose logs forgejo | grep -q "Starting new Web server"); do sleep 0.2; done
@@ -40,23 +40,23 @@ cd dummy-repo
 git checkout -b main
 touch .woodpecker.yml
 git add .woodpecker.yml
-git config user.email "test@example.com"
+git config user.email "test@localhost"
 git config user.name "Test User"
 git commit -m "initial commit"
-git remote add origin http://test:test@127.0.0.1:3000/test/test.git
+git remote add origin http://test_user:test_pass@127.0.0.1:3000/test_user/test_repo.git
 git push origin main
 cd ..
 
 _log "creating organization in forgejo..."
 docker compose exec forgejo curl -s -X POST \
     http://127.0.0.1:3000/api/v1/orgs \
-    --user test:test \
-    --json '{"username": "testorg"}'      
+    --user test_user:test_pass \
+    --json '{"username": "test_org"}'      
 
 _log "provisioning oauth2 app in forgejo for woodpecker..."
 OAUTH_APP=$(docker compose exec forgejo curl -s -X POST \
     http://127.0.0.1:3000/api/v1/user/applications/oauth2 \
-    --user test:test \
+    --user test_user:test_pass \
     --json '{
         "name": "woodpecker",
         "redirect_uris": ["http://127.0.0.1:8000/authorize"],
@@ -96,7 +96,7 @@ CSRF_TOKEN=$(curl -s \
 _log "logging in to forgejo..."
 curl -s http://127.0.0.1:3000/user/login \
   -X POST --cookie ${COOKIE_JAR} --cookie-jar ${COOKIE_JAR} \
-  --data "_csrf=${CSRF_TOKEN}&user_name=test&password=test"
+  --data "_csrf=${CSRF_TOKEN}&user_name=test_user&password=test_pass"
 
 _log "preparing csrf token for oauth2 authorize..."
 curl -s \

@@ -7,6 +7,7 @@ import (
 )
 
 func TestAccResourceRepositoryRegistry_basic(t *testing.T) {
+	name := "woodpecker_repository_registry.test_repo_registry"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: NewProto6ProviderFactory(),
@@ -16,18 +17,18 @@ func TestAccResourceRepositoryRegistry_basic(t *testing.T) {
 			{
 				Config: repositoryRegistryConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "repo_owner", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "repo_name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "address", "docker.io"),
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "username", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "password", "test"),
+					resource.TestCheckResourceAttr(name, "repo_owner", "test_user"),
+					resource.TestCheckResourceAttr(name, "repo_name", "test_repo"),
+					resource.TestCheckResourceAttr(name, "address", "docker.io"),
+					resource.TestCheckResourceAttr(name, "username", "reg_test_user"),
+					resource.TestCheckResourceAttr(name, "password", "reg_test_pass"),
 				),
 			},
 			// Import testing
 			{
-				ResourceName:            "woodpecker_repository_registry.test",
+				ResourceName:            name,
 				ImportState:             true,
-				ImportStateId:           "test/test/docker.io",
+				ImportStateId:           "test_user/test_repo/docker.io",
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"password"},
 			},
@@ -35,11 +36,11 @@ func TestAccResourceRepositoryRegistry_basic(t *testing.T) {
 			{
 				Config: repositoryRegistryConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "repo_owner", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "repo_name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "address", "docker.io"),
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "username", "test"),
-					resource.TestCheckResourceAttr("woodpecker_repository_registry.test", "password", "test"),
+					resource.TestCheckResourceAttr(name, "repo_owner", "test_user"),
+					resource.TestCheckResourceAttr(name, "repo_name", "test_repo"),
+					resource.TestCheckResourceAttr(name, "address", "docker.io"),
+					resource.TestCheckResourceAttr(name, "username", "reg_test_user"),
+					resource.TestCheckResourceAttr(name, "password", "reg_test_pass"),
 				),
 			},
 		},
@@ -47,15 +48,15 @@ func TestAccResourceRepositoryRegistry_basic(t *testing.T) {
 }
 
 var repositoryRegistryConfig = `
-resource "woodpecker_repository" "test" {
-	owner = "test"
-	name  = "test"
+resource "woodpecker_repository" "test_repo" {
+	owner = "test_user"
+	name  = "test_repo"
 }
-resource "woodpecker_repository_registry" "test" {
-	repo_owner = woodpecker_repository.test.owner
-	repo_name  = woodpecker_repository.test.name
+resource "woodpecker_repository_registry" "test_repo_registry" {
+	repo_owner = woodpecker_repository.test_repo.owner
+	repo_name  = woodpecker_repository.test_repo.name
 	address    = "docker.io"
-	username   = "test"
-	password   = "test"
+	username   = "reg_test_user"
+	password   = "reg_test_pass"
 }
 `

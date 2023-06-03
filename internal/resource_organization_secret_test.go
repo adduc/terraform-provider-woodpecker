@@ -7,6 +7,7 @@ import (
 )
 
 func TestAccResourceOrganizationSecret_basic(t *testing.T) {
+	name := "woodpecker_organization_secret.test_org_secret"
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: NewProto6ProviderFactory(),
@@ -16,17 +17,17 @@ func TestAccResourceOrganizationSecret_basic(t *testing.T) {
 			{
 				Config: organizationSecretConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_organization_secret.test", "owner", "testorg"),
-					resource.TestCheckResourceAttr("woodpecker_organization_secret.test", "name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_organization_secret.test", "events.#", "1"),
-					resource.TestCheckResourceAttr("woodpecker_organization_secret.test", "events.0", "push"),
+					resource.TestCheckResourceAttr(name, "owner", "test_org"),
+					resource.TestCheckResourceAttr(name, "name", "test_org_secret"),
+					resource.TestCheckResourceAttr(name, "events.#", "1"),
+					resource.TestCheckResourceAttr(name, "events.0", "push"),
 				),
 			},
 			// Import testing
 			{
-				ResourceName:            "woodpecker_organization_secret.test",
+				ResourceName:            name,
 				ImportState:             true,
-				ImportStateId:           "testorg/test",
+				ImportStateId:           "test_org/test_org_secret",
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"value"},
 			},
@@ -34,10 +35,10 @@ func TestAccResourceOrganizationSecret_basic(t *testing.T) {
 			{
 				Config: organizationSecretConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("woodpecker_organization_secret.test", "owner", "testorg"),
-					resource.TestCheckResourceAttr("woodpecker_organization_secret.test", "name", "test"),
-					resource.TestCheckResourceAttr("woodpecker_organization_secret.test", "events.#", "1"),
-					resource.TestCheckResourceAttr("woodpecker_organization_secret.test", "events.0", "push"),
+					resource.TestCheckResourceAttr(name, "owner", "test_org"),
+					resource.TestCheckResourceAttr(name, "name", "test_org_secret"),
+					resource.TestCheckResourceAttr(name, "events.#", "1"),
+					resource.TestCheckResourceAttr(name, "events.0", "push"),
 				),
 			},
 		},
@@ -45,10 +46,10 @@ func TestAccResourceOrganizationSecret_basic(t *testing.T) {
 }
 
 var organizationSecretConfig = `
-resource "woodpecker_organization_secret" "test" {
-	owner = "testorg"
-	name   = "test"
-	value  = "test"
+resource "woodpecker_organization_secret" "test_org_secret" {
+	owner = "test_org"
+	name   = "test_org_secret"
+	value  = "test_value"
 	events = ["push"]
 }
 `
