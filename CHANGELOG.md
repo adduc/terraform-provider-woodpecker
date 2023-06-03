@@ -1,6 +1,18 @@
 # Changelog
 
-## v0.4.0 - 2023-06-03
+## Unreleased - ????-??-??
+
+### Added
+
+- Add MPLv2 license
+
+### Changed
+
+- Upgrade to Terraform plugin framework v1.2.0
+- Upgrade to Terraform plugin go v0.15.0
+- Upgrade transitive dependencies
+
+## [v0.4.0] - 2023-06-03
 
 ### Added
 
@@ -17,7 +29,7 @@
 - secret: Mark events field as required (was already required by
   Woodpecker)
 
-## v0.3.0 - 2022-11-24
+## [v0.3.0] - 2022-11-24
 
 ### Added
 
@@ -39,7 +51,7 @@
 
 - Fix inability to import crons with slashes (`/`) in their name.
 
-## v0.2.0 - 2022-11-20
+## [v0.2.0] - 2022-11-20
 
 ### Added
 
@@ -55,7 +67,7 @@
 
 - Fix error messages using wrong resource name
 
-## v0.1.0 - 2022-11-13
+## [v0.1.0] - 2022-11-13
 
 ### Added
 
@@ -68,7 +80,15 @@
 - Resources are now properly marked for recreation when dependent fields are changed (repository owner, repository name, secret name, etc.).
 - Update documentation
 
-## v0.0.1 - 2022-11-09
+## [v0.0.1] - 2022-11-09
 
 Initial release, with support for administering repository and
 repository cron data sources and resources.
+
+<!-- Links -->
+
+[v0.4.0]: https://github.com/adduc/terraform-provider-woodpecker/releases/tag/v0.4.0
+[v0.3.0]: https://github.com/adduc/terraform-provider-woodpecker/releases/tag/v0.3.0
+[v0.2.0]: https://github.com/adduc/terraform-provider-woodpecker/releases/tag/v0.2.0
+[v0.1.0]: https://github.com/adduc/terraform-provider-woodpecker/releases/tag/v0.1.0
+[v0.0.1]: https://github.com/adduc/terraform-provider-woodpecker/releases/tag/v0.0.1
