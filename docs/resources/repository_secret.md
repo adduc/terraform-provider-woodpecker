@@ -33,6 +33,7 @@ resource "woodpecker_repository_secret" "secret" {
 
 ### Required
 
+- `events` (Set of String) One or more event types where secret is available (one of push, tag, pull_request, deployment, cron, manual)
 - `name` (String) Secret Name
 - `repo_name` (String) Repository name
 - `repo_owner` (String) User or organization responsible for repository
@@ -40,7 +41,6 @@ resource "woodpecker_repository_secret" "secret" {
 
 ### Optional
 
-- `events` (Set of String) One or more event types where secret is available (one of push, tag, pull_request, deployment, cron, manual)
 - `images` (Set of String) List of images where this secret is available, leave empty to allow all images
 - `plugins_only` (Boolean) Whether secret is only available for plugins
 
