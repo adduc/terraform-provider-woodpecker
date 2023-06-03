@@ -6,7 +6,7 @@ require (
 	github.com/hashicorp/terraform-plugin-framework v0.17.0
 	github.com/hashicorp/terraform-plugin-go v0.14.3
 	github.com/hashicorp/terraform-plugin-testing v1.2.0
-	github.com/woodpecker-ci/woodpecker v0.15.1-0.20230531192757-f91ee5d23a75
+	github.com/woodpecker-ci/woodpecker v0.15.1
 	golang.org/x/oauth2 v0.8.0
 )
 
