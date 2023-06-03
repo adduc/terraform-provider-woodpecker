@@ -10,6 +10,13 @@
 
 - Upgrade to Terraform plugin framework 0.17.0
 
+### Fixed
+
+- repository secret: Mark events field as required (was already required
+  by Woodpecker)
+- secret: Mark events field as required (was already required by
+  Woodpecker)
+
 ## v0.3.0 - 2022-11-24
 
 ### Added
