@@ -1,10 +1,10 @@
 # Changelog
 
-## v0.4.0 - 2023-XX-XX
+## v0.4.0 - 2023-06-03
 
 ### Added
 
-- Add tests for common use cases
+- Add tests for resources, data sources
 
 ### Changed
 
